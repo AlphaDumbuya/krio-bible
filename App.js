@@ -129,6 +129,69 @@ export default function App() {
     }
   ];
 
+  // Render tutorial overlay - MOVED HERE TO FIX HOISTING ISSUE
+  const renderTutorial = () => {
+    if (!showTutorial) return null;
+
+    const currentStep = tutorialSteps[tutorialStep];
+    const isLastStep = tutorialStep === tutorialSteps.length - 1;
+
+    return (
+      <View style={styles.tutorialOverlay}>
+        <View style={styles.tutorialModal}>
+          <Text style={styles.tutorialIcon}>{currentStep.icon}</Text>
+          <Text style={styles.tutorialTitle}>{currentStep.title}</Text>
+          <Text style={styles.tutorialDescription}>{currentStep.description}</Text>
+          
+          <View style={styles.tutorialSteps}>
+            {tutorialSteps.map((_, index) => (
+              <View
+                key={index}
+                style={[
+                  styles.tutorialDot,
+                  index === tutorialStep && styles.tutorialDotActive
+                ]}
+              />
+            ))}
+          </View>
+
+          <View style={styles.tutorialButtons}>
+            {tutorialStep > 0 && (
+              <TouchableOpacity
+                style={styles.tutorialBtnSecondary}
+                onPress={() => setTutorialStep(tutorialStep - 1)}
+              >
+                <Text style={styles.tutorialBtnSecondaryText}>← Back</Text>
+              </TouchableOpacity>
+            )}
+            
+            <TouchableOpacity
+              style={styles.tutorialBtnPrimary}
+              onPress={() => {
+                if (isLastStep) {
+                  setShowTutorial(false);
+                } else {
+                  setTutorialStep(tutorialStep + 1);
+                }
+              }}
+            >
+              <Text style={styles.tutorialBtnPrimaryText}>
+                {isLastStep ? "Get Started" : "Next →"}
+              </Text>
+            </TouchableOpacity>
+          </View>
+
+          <TouchableOpacity
+            style={styles.tutorialSkip}
+            onPress={() => setShowTutorial(false)}
+          >
+            <Text style={styles.tutorialSkipText}>Skip Tutorial</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    );
+  };
+
   // Check if user has seen tutorial
   useEffect(() => {
     // In a real app, you'd use AsyncStorage to persist this
@@ -1288,75 +1351,6 @@ export default function App() {
     );
   }
 
-  // Render tutorial overlay
-  const renderTutorial = () => {
-    if (!showTutorial) return null;
-
-    const currentStep = tutorialSteps[tutorialStep];
-    const isLastStep = tutorialStep === tutorialSteps.length - 1;
-
-    return (
-      <View style={styles.tutorialOverlay}>
-        <View style={styles.tutorialModal}>
-          <Text style={styles.tutorialIcon}>{currentStep.icon}</Text>
-          <Text style={styles.tutorialTitle}>{currentStep.title}</Text>
-          <Text style={styles.tutorialDescription}>{currentStep.description}</Text>
-          
-          <View style={styles.tutorialSteps}>
-            {tutorialSteps.map((_, index) => (
-              <View
-                key={index}
-                style={[
-                  styles.tutorialDot,
-                  index === tutorialStep && styles.tutorialDotActive
-                ]}
-              />
-            ))}
-          </View>
-
-          <View style={styles.tutorialButtons}>
-            {tutorialStep > 0 && (
-              <TouchableOpacity
-                style={styles.tutorialBtnSecondary}
-                onPress={() => setTutorialStep(tutorialStep - 1)}
-              >
-                <Text style={styles.tutorialBtnSecondaryText}>← Back</Text>
-              </TouchableOpacity>
-            )}
-            
-            <TouchableOpacity
-              style={styles.tutorialBtnPrimary}
-              onPress={() => {
-                if (isLastStep) {
-                  setShowTutorial(false);
-                } else {
-                  setTutorialStep(tutorialStep + 1);
-                }
-              }}
-            >
-              <Text style={styles.tutorialBtnPrimaryText}>
-                {isLastStep ? "Get Started" : "Next →"}
-              </Text>
-            </TouchableOpacity>
-          </View>
-
-          <TouchableOpacity
-            style={styles.tutorialSkip}
-            onPress={() => setShowTutorial(false)}
-          >
-            <Text style={styles.tutorialSkipText}>Skip Tutorial</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    );
-  };
-
-  return (
-    <View style={styles.container}>
-      <Text>Loading...</Text>
-      {renderTutorial()}
-    </View>
-  );
 }
 
 const styles = StyleSheet.create({
