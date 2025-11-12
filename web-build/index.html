@@ -279,12 +279,43 @@
             <p style="color: #d0d0d0; font-size: 1.1em;">Beautiful • Free • Works Everywhere</p>
             
             <div class="cta-buttons">
-                <a href="./app.html" class="btn btn-primary">
-                    🚀 Launch App Now
+                <button onclick="installApp()" class="btn btn-primary" id="installButton">
+                    📲 Install App
+                </button>
+                <a href="./app.html" class="btn btn-secondary">
+                    🌐 Open in Browser
                 </a>
-                <a href="https://github.com/AlphaDumbuya/krio-bible" class="btn btn-secondary" target="_blank">
-                    ⭐ View on GitHub
-                </a>
+            </div>
+            
+            <div id="installInstructions" style="margin-top: 30px; padding: 20px; background: rgba(255, 255, 255, 0.05); border-radius: 15px; border: 1px solid rgba(255, 255, 255, 0.1); display: none;">
+                <h3 style="color: #ff4081; margin-bottom: 15px;">� Installation Instructions</h3>
+                <div id="iosInstructions" style="display: none; text-align: left; color: #d0d0d0; line-height: 1.8;">
+                    <strong style="color: #ff4081;">For iPhone/iPad:</strong>
+                    <ol style="margin-left: 20px; margin-top: 10px;">
+                        <li>Tap the <strong>Share button</strong> (square with arrow) at the bottom</li>
+                        <li>Scroll down and tap <strong>"Add to Home Screen"</strong></li>
+                        <li>Tap <strong>"Add"</strong> in the top right</li>
+                        <li>Find the app icon on your home screen!</li>
+                    </ol>
+                </div>
+                <div id="androidInstructions" style="display: none; text-align: left; color: #d0d0d0; line-height: 1.8;">
+                    <strong style="color: #ff4081;">For Android:</strong>
+                    <ol style="margin-left: 20px; margin-top: 10px;">
+                        <li>Tap the <strong>menu</strong> (three dots) in the top right</li>
+                        <li>Tap <strong>"Add to Home screen"</strong> or <strong>"Install app"</strong></li>
+                        <li>Tap <strong>"Install"</strong> or <strong>"Add"</strong></li>
+                        <li>Find the app icon in your app drawer!</li>
+                    </ol>
+                </div>
+                <div id="desktopInstructions" style="display: none; text-align: left; color: #d0d0d0; line-height: 1.8;">
+                    <strong style="color: #ff4081;">For Desktop (Chrome/Edge):</strong>
+                    <ol style="margin-left: 20px; margin-top: 10px;">
+                        <li>Look for the <strong>install icon</strong> (⊕ or computer icon) in the address bar</li>
+                        <li>Click <strong>"Install"</strong></li>
+                        <li>The app will open in its own window!</li>
+                    </ol>
+                    <p style="margin-top: 10px; font-size: 0.9em; color: #b0b0b0;">Or click the button above when prompted.</p>
+                </div>
             </div>
         </header>
 
@@ -388,13 +419,16 @@
         </div>
 
         <div style="text-align: center; margin: 60px 0;">
-            <h2 style="font-size: 2.5em; margin-bottom: 20px; color: #ff4081;">Ready to Experience It?</h2>
+            <h2 style="font-size: 2.5em; margin-bottom: 20px; color: #ff4081;">Ready to Install?</h2>
             <p style="font-size: 1.2em; color: #d0d0d0; margin-bottom: 30px;">
-                Start listening to God's Word in Krio today - completely free!
+                Install the app on your device - works like a native app, no app store needed!
             </p>
-            <a href="./app.html" class="btn btn-primary" style="font-size: 1.3em; padding: 20px 60px;">
-                🚀 Launch Krio Audio Bible
-            </a>
+            <button onclick="installApp()" class="btn btn-primary" style="font-size: 1.3em; padding: 20px 60px;">
+                � Install Krio Audio Bible
+            </button>
+            <p style="font-size: 1em; color: #b0b0b0; margin-top: 20px;">
+                Works on iPhone, Android, Windows, Mac, and Linux
+            </p>
         </div>
 
         <footer>
@@ -407,5 +441,104 @@
             </p>
         </footer>
     </div>
+
+    <script>
+        let deferredPrompt;
+        const installButton = document.getElementById('installButton');
+        const installInstructions = document.getElementById('installInstructions');
+
+        // Detect platform
+        function detectPlatform() {
+            const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+            
+            if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
+                return 'ios';
+            } else if (/android/i.test(userAgent)) {
+                return 'android';
+            } else {
+                return 'desktop';
+            }
+        }
+
+        // Show appropriate instructions based on platform
+        function showInstructions() {
+            const platform = detectPlatform();
+            installInstructions.style.display = 'block';
+            
+            if (platform === 'ios') {
+                document.getElementById('iosInstructions').style.display = 'block';
+            } else if (platform === 'android') {
+                document.getElementById('androidInstructions').style.display = 'block';
+            } else {
+                document.getElementById('desktopInstructions').style.display = 'block';
+            }
+            
+            // Scroll to instructions
+            installInstructions.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        // Listen for beforeinstallprompt event (Chrome, Edge, Android)
+        window.addEventListener('beforeinstallprompt', (e) => {
+            // Prevent the mini-infobar from appearing on mobile
+            e.preventDefault();
+            // Stash the event so it can be triggered later
+            deferredPrompt = e;
+            // Update button text
+            if (installButton) {
+                installButton.innerHTML = '📲 Install App';
+            }
+        });
+
+        // Install app function
+        function installApp() {
+            const platform = detectPlatform();
+            
+            // For iOS, always show instructions
+            if (platform === 'ios') {
+                showInstructions();
+                return;
+            }
+            
+            // For Android/Desktop, try to use the install prompt
+            if (deferredPrompt) {
+                // Show the install prompt
+                deferredPrompt.prompt();
+                
+                // Wait for the user to respond to the prompt
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        console.log('User accepted the install prompt');
+                    } else {
+                        console.log('User dismissed the install prompt');
+                        showInstructions();
+                    }
+                    deferredPrompt = null;
+                });
+            } else {
+                // If no prompt available, show manual instructions
+                showInstructions();
+            }
+        }
+
+        // Handle successful installation
+        window.addEventListener('appinstalled', () => {
+            console.log('PWA was installed');
+            // Hide install button
+            if (installButton) {
+                installButton.innerHTML = '✅ App Installed!';
+                installButton.disabled = true;
+            }
+            // Optionally show success message
+            alert('🎉 App installed successfully! Find it on your home screen.');
+        });
+
+        // Check if already installed (standalone mode)
+        if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
+            if (installButton) {
+                installButton.innerHTML = '✅ Already Installed';
+                installButton.disabled = true;
+            }
+        }
+    </script>
 </body>
 </html>
