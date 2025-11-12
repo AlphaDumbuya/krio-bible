@@ -3,14 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>Krio Audio Bible - Download for Android & iOS</title>
     <meta name="description" content="Download the Krio Audio Bible app - Listen to the complete Bible in Krio language">
-    
     <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#0a0e27">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-title" content="Krio Audio Bible">
-    
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-22C7RL6HWC"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
@@ -18,122 +19,52 @@
         gtag('js', new Date());
         gtag('config', 'G-22C7RL6HWC');
     </script>
-    
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
-            color: #ffffff;
-            min-height: 100vh;
-        }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%); color: #ffffff; min-height: 100vh; }
         .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
-        header {
-            text-align: center;
-            padding: 60px 20px 40px;
-            background: linear-gradient(135deg, rgba(138, 43, 226, 0.1) 0%, rgba(255, 64, 129, 0.1) 100%);
-            border-radius: 20px;
-            margin-bottom: 40px;
-        }
-        .logo {
-            width: 120px;
-            height: 120px;
-            margin: 0 auto 20px;
-            background: #fff;
-            border-radius: 20px;
-            padding: 10px;
-            box-shadow: 0 10px 30px rgba(255, 64, 129, 0.3);
-        }
-        .logo img { width: 100%; height: 100%; object-fit: contain; }
-        h1 {
-            font-size: 3em;
-            margin-bottom: 10px;
-            background: linear-gradient(135deg, #ff4081, #8a2be2);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
+        header { text-align: center; padding: 60px 20px 40px; background: linear-gradient(135deg, rgba(138, 43, 226, 0.1) 0%, rgba(255, 64, 129, 0.1) 100%); border-radius: 20px; margin-bottom: 40px; }
+        .logo { width: 120px; height: 120px; margin: 0 auto 20px; background: #fff; border-radius: 20px; padding: 10px; box-shadow: 0 10px 30px rgba(255, 64, 129, 0.3); }
+        .logo img { width: 100%; height: 100%; object-fit: contain; display: block; }
+        h1 { font-size: 3em; margin-bottom: 10px; background: linear-gradient(135deg, #ff4081, #8a2be2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
         .tagline { font-size: 1.3em; color: #b0b0b0; margin-bottom: 30px; }
-        .download-section {
-            text-align: center;
-            margin: 60px 0;
-            padding: 50px 30px;
-            background: linear-gradient(135deg, rgba(138, 43, 226, 0.2), rgba(255, 64, 129, 0.2));
-            border-radius: 20px;
-            border: 2px solid rgba(255, 64, 129, 0.3);
-        }
+        .download-section { text-align: center; margin: 60px 0; padding: 50px 30px; background: linear-gradient(135deg, rgba(138, 43, 226, 0.2), rgba(255, 64, 129, 0.2)); border-radius: 20px; border: 2px solid rgba(255, 64, 129, 0.3); }
         .download-section h2 { font-size: 2.5em; margin-bottom: 20px; color: #ff4081; }
         .download-section p { font-size: 1.2em; color: #d0d0d0; margin-bottom: 40px; }
-        .btn {
-            padding: 18px 40px;
-            font-size: 1.2em;
-            border: none;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-weight: 600;
-            background: linear-gradient(135deg, #ff4081, #8a2be2);
-            color: white;
-            box-shadow: 0 10px 30px rgba(255, 64, 129, 0.4);
-        }
+        .btn { padding: 18px 40px; font-size: 1.2em; border: none; border-radius: 50px; cursor: pointer; transition: all 0.3s; font-weight: 600; background: linear-gradient(135deg, #ff4081, #8a2be2); color: white; box-shadow: 0 10px 30px rgba(255, 64, 129, 0.4); }
         .btn:hover { transform: translateY(-3px); box-shadow: 0 15px 40px rgba(255, 64, 129, 0.6); }
-        .download-info {
-            margin-top: 40px;
-            padding: 30px;
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 15px;
-            text-align: left;
-        }
+        .download-info { margin-top: 40px; padding: 30px; background: rgba(0, 0, 0, 0.3); border-radius: 15px; text-align: left; }
         .download-info h3 { color: #ff4081; margin-bottom: 20px; font-size: 1.5em; }
         .download-info p { margin-bottom: 15px; font-size: 1.1em; color: #d0d0d0; }
-        .features {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 30px;
-            margin: 60px 0;
-        }
-        .feature-card {
-            padding: 40px 30px;
-            background: linear-gradient(135deg, rgba(138, 43, 226, 0.1), rgba(255, 64, 129, 0.1));
-            border-radius: 20px;
-            border: 1px solid rgba(255, 64, 129, 0.2);
-            transition: transform 0.3s;
-        }
+        .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; margin: 60px 0; }
+        .feature-card { padding: 40px 30px; background: linear-gradient(135deg, rgba(138, 43, 226, 0.1), rgba(255, 64, 129, 0.1)); border-radius: 20px; border: 1px solid rgba(255, 64, 129, 0.2); transition: transform 0.3s; }
         .feature-card:hover { transform: translateY(-5px); border-color: rgba(255, 64, 129, 0.5); }
         .feature-card h3 { color: #ff4081; font-size: 1.8em; margin-bottom: 15px; }
         .feature-card p { color: #b0b0b0; font-size: 1.1em; }
-        footer {
-            text-align: center;
-            padding: 40px 20px;
-            margin-top: 60px;
-            border-top: 1px solid rgba(255, 64, 129, 0.2);
-            color: #b0b0b0;
-        }
-        .install-instructions { display: none; margin-top: 30px; padding: 25px; background: rgba(255, 64, 129, 0.1); border-radius: 15px; }
-        .install-instructions h4 { color: #ff4081; margin-bottom: 15px; }
+        footer { text-align: center; padding: 40px 20px; margin-top: 60px; border-top: 1px solid rgba(255, 64, 129, 0.2); color: #b0b0b0; }
+        .install-instructions { display: none; margin-top: 30px; padding: 25px; background: rgba(255, 64, 129, 0.1); border-radius: 15px; border: 2px solid rgba(255, 64, 129, 0.3); }
+        .install-instructions h4 { color: #ff4081; margin-bottom: 15px; font-size: 1.3em; }
         .install-instructions ol { text-align: left; padding-left: 30px; color: #d0d0d0; }
-        .install-instructions li { margin-bottom: 10px; }
+        .install-instructions li { margin-bottom: 10px; font-size: 1.05em; }
     </style>
 </head>
-
 <body>
     <div class="container">
         <header>
             <div class="logo">
-                <img src="/assets/assets/nlicm-logo.f965c92be117cc700704824a732689cc.jpg" alt="Logo">
+                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Crect fill='%23ff4081' width='200' height='200' rx='20'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-size='40' font-weight='bold' fill='%23ffffff'%3EKAB%3C/text%3E%3C/svg%3E" alt="Krio Audio Bible Logo">
             </div>
             <h1>Krio Audio Bible</h1>
             <p class="tagline">New Life in Christ Ministry - Kossoh Town Chapter</p>
         </header>
 
         <div class="download-section">
-            <h2>ÔøΩÔøΩÔøΩ Get the App</h2>
+            <h2>Ì≥± Get the App</h2>
             <p>Install and listen to the complete Bible in Krio language offline</p>
-            
-            <button onclick="installApp()" class="btn">ÔøΩÔøΩÔøΩ Download & Install App</button>
+            <button onclick="installApp()" class="btn">Ì≥• Download & Install App</button>
 
             <div class="install-instructions" id="installInstructions">
-                <h4>ÔøΩÔøΩÔøΩ How to Install:</h4>
+                <h4>Ì≥ã How to Install:</h4>
                 <ol>
                     <li><strong>Android:</strong> Tap menu (‚ãÆ) ‚Üí "Add to Home screen"</li>
                     <li><strong>iOS:</strong> Tap share (‚ñ°‚Üë) ‚Üí "Add to Home Screen"</li>
@@ -152,19 +83,19 @@
 
         <div class="features">
             <div class="feature-card">
-                <h3>ÔøΩÔøΩÔøΩ Complete Bible</h3>
+                <h3>Ì≥ñ Complete Bible</h3>
                 <p>All 66 books - Old and New Testament in authentic Krio language.</p>
             </div>
             <div class="feature-card">
-                <h3>ÔøΩÔøΩÔøΩ Crystal Clear Audio</h3>
+                <h3>Ìæß Crystal Clear Audio</h3>
                 <p>Professional voice recordings with excellent sound quality.</p>
             </div>
             <div class="feature-card">
-                <h3>ÔøΩÔøΩÔøΩ Offline Access</h3>
+                <h3>Ì≥≤ Offline Access</h3>
                 <p>Download books to listen anytime without internet connection.</p>
             </div>
             <div class="feature-card">
-                <h3>ÔøΩÔøΩÔøΩ Works Everywhere</h3>
+                <h3>Ìºç Works Everywhere</h3>
                 <p>Progressive Web App - works on Android, iOS, Windows, Mac, Linux.</p>
             </div>
             <div class="feature-card">
@@ -172,7 +103,7 @@
                 <p>Optimized for speed with minimal storage requirements.</p>
             </div>
             <div class="feature-card">
-                <h3>ÔøΩÔøΩÔøΩ Made with Love</h3>
+                <h3>Ìπè Made with Love</h3>
                 <p>Created by New Life in Christ Ministry for the Krio community.</p>
             </div>
         </div>
@@ -184,30 +115,39 @@
     </div>
 
     <script>
+        console.log('Landing page loaded - version 3.0');
         let deferredPrompt;
+        
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             deferredPrompt = e;
+            console.log('Install prompt ready');
         });
         
         window.addEventListener('appinstalled', () => {
+            console.log('App installed');
             gtag('event', 'pwa_installed', {'event_category': 'engagement'});
         });
         
         function installApp() {
+            console.log('Install button clicked');
             gtag('event', 'install_button_clicked', {'event_category': 'engagement'});
             
             if (deferredPrompt) {
+                console.log('Showing install prompt');
                 deferredPrompt.prompt();
                 deferredPrompt.userChoice.then((choiceResult) => {
                     if (choiceResult.outcome === 'accepted') {
+                        console.log('Install accepted');
                         gtag('event', 'pwa_install_accepted', {'event_category': 'engagement'});
                     } else {
+                        console.log('Install declined');
                         gtag('event', 'pwa_install_declined', {'event_category': 'engagement'});
                     }
                     deferredPrompt = null;
                 });
             } else {
+                console.log('No install prompt - showing instructions');
                 document.getElementById('installInstructions').style.display = 'block';
                 document.getElementById('installInstructions').scrollIntoView({behavior: 'smooth'});
             }
@@ -215,7 +155,11 @@
         
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/service-worker.js');
+                navigator.serviceWorker.register('/service-worker.js').then(reg => {
+                    console.log('Service Worker registered');
+                }).catch(err => {
+                    console.log('Service Worker registration failed:', err);
+                });
             });
         }
     </script>
