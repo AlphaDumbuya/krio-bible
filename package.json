@@ -20,6 +20,8 @@
     "cors": "^2.8.5",
     "expo": "~50.0.0",
     "expo-av": "~13.10.0",
+    "expo-dev-client": "^6.0.17",
+    "expo-modules-core": "^3.0.25",
     "expo-notifications": "^0.32.12",
     "expo-status-bar": "~1.11.0",
     "express": "^5.1.0",
