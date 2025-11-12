@@ -20,13 +20,16 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#1a472a"
+        "foregroundImage": "./assets/nlicm-logo.jpg",
+        "backgroundColor": "#0a0e27"
       },
       "package": "com.newlifeinkossohtown.krioaudiobible",
-      "permissions": [
-        "android.permission.READ_EXTERNAL_STORAGE"
-      ]
+      "permissions": []
+    },
+    "extra": {
+      "eas": {
+        "projectId": "32224755-5543-4a81-92b7-8984f06d30d9"
+      }
     }
   }
 }
