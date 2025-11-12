@@ -4,10 +4,10 @@
     "slug": "krio-audio-bible",
     "version": "1.0.1",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/nlicm-logo.jpg",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/icon.png",
+      "image": "./assets/nlicm-logo.jpg",
       "resizeMode": "contain",
       "backgroundColor": "#0a0e27"
     },
@@ -20,22 +20,25 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/icon.png",
+        "foregroundImage": "./assets/nlicm-logo.jpg",
         "backgroundColor": "#0a0e27"
       },
       "package": "com.newlifeinkossohtown.krioaudiobible",
-      "versionCode": 2,
       "permissions": [
-        "INTERNET"
+        "INTERNET",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.MODIFY_AUDIO_SETTINGS"
       ]
     },
     "plugins": [
-      "expo-av"
+      "expo-av",
+      "expo-font"
     ],
     "extra": {
       "eas": {
-        "projectId": "32224755-5543-4a81-92b7-8984f06d30d9"
+        "projectId": "ae84203f-9cc2-4ca1-90c4-df58bf87eb31"
       }
-    }
+    },
+    "owner": "alphadumbuya7"
   }
 }

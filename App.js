@@ -96,7 +96,7 @@ export default function App() {
   const [downloadedBooks, setDownloadedBooks] = useState({});
   const [downloadingBook, setDownloadingBook] = useState(null);
   const [downloadProgress, setDownloadProgress] = useState(0);
-  const [showTutorial, setShowTutorial] = useState(true);
+  const [showTutorial, setShowTutorial] = useState(false);
   const [tutorialStep, setTutorialStep] = useState(0);
 
   // Tutorial steps
