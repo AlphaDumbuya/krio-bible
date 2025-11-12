@@ -1,0 +1,22 @@
+{
+  "background_color": "#0a0e27",
+  "description": "Krio Audio Bible - New Life in Christ Ministry Kossoh Town Chapter",
+  "display": "standalone",
+  "lang": "en",
+  "name": "Krio Audio Bible",
+  "short_name": "Krio Audio Bible",
+  "start_url": "/?utm_source=web_app_manifest",
+  "orientation": "portrait",
+  "related_applications": [
+    {
+      "platform": "itunes",
+      "id": "com.newlifeinkossohtown.krioaudiobible"
+    },
+    {
+      "platform": "play",
+      "url": "http://play.google.com/store/apps/details?id=com.newlifeinkossohtown.krioaudiobible",
+      "id": "com.newlifeinkossohtown.krioaudiobible"
+    }
+  ],
+  "prefer_related_applications": true
+}
