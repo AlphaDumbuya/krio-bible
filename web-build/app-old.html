@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <title>Krio Audio Bible</title>
+    <meta name="version" content="v2.2-app-loader-fix" />
+    <style id="expo-reset">
+        html, body { height: 100%; margin: 0; padding: 0; }
+        body { overflow: hidden; }
+        #root { display: flex; height: 100%; flex: 1; width: 100%; }
+        .loading-screen {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            width: 100%;
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        .spinner {
+            width: 80px;
+            height: 80px;
+            border: 5px solid rgba(255, 64, 129, 0.3);
+            border-top-color: #ff4081;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .loading-text {
+            color: #ffffff;
+            font-size: 18px;
+            margin-top: 20px;
+            font-weight: 600;
+        }
+        .loading-subtext {
+            color: #b0b0b0;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+        .error-screen {
+            display: none;
+            color: #ff4081;
+            padding: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div id="root">
+        <div class="loading-screen" id="loadingScreen">
+            <div class="spinner"></div>
+            <div class="loading-text">Loading Krio Audio Bible...</div>
+            <div class="loading-subtext">Please wait</div>
+        </div>
+        <div class="error-screen" id="errorScreen">
+            <h2>Error Loading App</h2>
+            <p id="errorMessage"></p>
+            <p><small>Check browser console for details</small></p>
+        </div>
+    </div>
+
+    <script>
+        console.log('App.html loaded, version v2.2');
+        console.log('Attempting to load React Native bundle...');
+        
+        window.addEventListener('error', (event) => {
+            console.error('Global error:', event.error);
+            showError('JavaScript Error: ' + (event.error ? event.error.message : 'Unknown error'));
+        });
+        
+        function showError(msg) {
+            console.error('Showing error:', msg);
+            document.getElementById('loadingScreen').style.display = 'none';
+            document.getElementById('errorScreen').style.display = 'block';
+            document.getElementById('errorMessage').textContent = msg;
+        }
+        
+        // Timeout after 30 seconds if app doesn't load
+        setTimeout(() => {
+            if (document.getElementById('loadingScreen').style.display !== 'none') {
+                showError('App took too long to load. Try refreshing the page.');
+            }
+        }, 30000);
+    </script>
+
+    <script src="/_expo/static/js/web/AppEntry-60a8d69ecc9fe9928b6e556410a95e8a.js" defer onerror="showError('Failed to load bundle')"></script>
+
+    <script>
+        // Verify bundle loaded after a delay
+        setTimeout(() => {
+            console.log('Checking if React app initialized...');
+            const rootDiv = document.getElementById('root');
+            // Check if React has replaced content
+            if (rootDiv.children.length === 1 && rootDiv.firstChild.id === 'root') {
+                console.log('Still showing loading screen - app may not have initialized');
+            }
+        }, 5000);
+    </script>
+</body>
+</html>
