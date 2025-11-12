@@ -154,6 +154,7 @@
             
             if (deferredPrompt) {
                 // Show the install prompt
+                console.log('Showing install prompt');
                 deferredPrompt.prompt();
                 deferredPrompt.userChoice.then((choiceResult) => {
                     if (choiceResult.outcome === 'accepted') {
@@ -165,9 +166,26 @@
                     deferredPrompt = null;
                 });
             } else {
-                // If prompt not available, redirect to app and show instructions
-                console.log('Install prompt not available, redirecting to app');
-                window.location.href = 'app.html';
+                // Check if already installed or running as PWA
+                if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
+                    console.log('App already installed');
+                    alert('App is already installed! Check your home screen.');
+                    return;
+                }
+                
+                // Check if iOS device
+                const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+                if (isIOS) {
+                    console.log('iOS device detected - showing instructions');
+                    alert('To install on iOS:\n\n1. Tap the Share button (⬆️)\n2. Scroll down and tap "Add to Home Screen"\n3. Tap "Add"');
+                    gtag('event', 'ios_install_instructions_shown', {'event_category': 'engagement'});
+                    return;
+                }
+                
+                // For other browsers, show generic instructions
+                console.log('Install prompt not available - showing instructions');
+                alert('To install:\n\n• Android Chrome: Tap menu (⋮) → "Add to Home Screen" or "Install app"\n• iOS Safari: Tap Share (⬆️) → "Add to Home Screen"');
+                gtag('event', 'manual_install_instructions_shown', {'event_category': 'engagement'});
             }
         }
         
