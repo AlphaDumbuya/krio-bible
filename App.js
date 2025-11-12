@@ -79,8 +79,6 @@ const BIBLE_DATA = {
 
 // Main App component
 export default function App() {
-  console.log('App component rendering...');
-  
   // State declarations
   const [screen, setScreen] = useState('home');
   const [testament, setTestament] = useState('');
@@ -205,13 +203,6 @@ export default function App() {
       const CLOUDINARY_CLOUD_NAME = 'dwdgiblmg';
       const audioUrl = `https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/video/upload/audio/${bookFolderName}/${audioFileName}`;
       
-      // LOCAL DEVELOPMENT: Uncomment to use local server for testing
-      // const audioUrl = `http://localhost:3000/audio/${bookFolderName}/${audioFileName}`;
-      
-      console.log('Loading audio:', audioFileName);
-      console.log('Audio URL:', audioUrl);
-      console.log('Book folder:', bookFolderName);
-      
       // Unload previous sound if exists
       if (sound) {
         await sound.unloadAsync();
@@ -234,16 +225,10 @@ export default function App() {
       setIsPlaying(true);
       setIsLoading(false);
     } catch (error) {
-      console.error('Error loading audio:', error);
       setIsLoading(false);
-      
-      const bookFolderName = book.name.replace(/ /g, '_');
-      const bookNameLowercase = book.name.toLowerCase().replace(/ /g, '_');
-      const audioUrl = `http://localhost:3000/audio/${bookFolderName}/${bookNameLowercase}_${chapter}.mp3`;
-      
       Alert.alert(
-        'Audio Server Error',
-        `Cannot play audio for ${book.name} Chapter ${chapter}\n\nError: ${error.message}\n\nTrying to load from:\n${audioUrl}\n\nMake sure the audio server is running:\nRun "node audio-server.js" in a separate terminal`,
+        'Cannot Load Audio',
+        `Unable to play ${book.name} Chapter ${chapter}. Please check your internet connection and try again.`,
         [{ text: 'OK' }]
       );
     }
@@ -450,7 +435,6 @@ export default function App() {
 
   // Home Screen
   if (screen === 'home') {
-    console.log('Rendering home screen, book:', book, 'chapter:', chapter);
     const oldTestamentBooks = BIBLE_DATA.oldTestament || [];
     const newTestamentBooks = BIBLE_DATA.newTestament || [];
     const currentBooks = testament === 'old' ? oldTestamentBooks : (testament === 'new' ? newTestamentBooks : []);
@@ -1083,7 +1067,6 @@ export default function App() {
                 key={item}
                 style={styles.chapterBox}
                 onPress={() => {
-                  console.log('Chapter clicked:', item);
                   setChapter(item);
                   setScreen('home');
                 }}

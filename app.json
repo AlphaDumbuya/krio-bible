@@ -2,12 +2,12 @@
   "expo": {
     "name": "Krio Audio Bible",
     "slug": "krio-audio-bible",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
-    "icon": "./assets/nlicm-logo.jpg",
+    "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/nlicm-logo.jpg",
+      "image": "./assets/icon.png",
       "resizeMode": "contain",
       "backgroundColor": "#0a0e27"
     },
@@ -19,15 +19,18 @@
       "bundleIdentifier": "com.newlifeinkossohtown.krioaudiobible"
     },
     "android": {
-      "icon": "./assets/nlicm-logo.jpg",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/icon.png",
+        "backgroundColor": "#0a0e27"
+      },
       "package": "com.newlifeinkossohtown.krioaudiobible",
-      "versionCode": 1,
-      "permissions": []
+      "versionCode": 2,
+      "permissions": [
+        "INTERNET"
+      ]
     },
     "plugins": [
-      [
-        "expo-av"
-      ]
+      "expo-av"
     ],
     "extra": {
       "eas": {
