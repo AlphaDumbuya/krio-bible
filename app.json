@@ -4,10 +4,8 @@
     "slug": "krio-audio-bible",
     "version": "1.0.1",
     "orientation": "portrait",
-    "icon": "./assets/nlicm-logo.jpg",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/nlicm-logo.jpg",
       "resizeMode": "contain",
       "backgroundColor": "#0a0e27"
     },
@@ -20,7 +18,6 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/nlicm-logo.jpg",
         "backgroundColor": "#0a0e27"
       },
       "package": "com.newlifeinkossohtown.krioaudiobible",
