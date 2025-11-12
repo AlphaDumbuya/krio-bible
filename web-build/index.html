@@ -444,39 +444,36 @@
                 event_label: 'Install Button'
             });
             
-            // For Android/Desktop, open the app directly and show browser's install option
-            if (platform === 'android' || platform === 'desktop') {
-                // Try to trigger install prompt if available
-                if (deferredPrompt) {
-                    deferredPrompt.prompt();
-                    deferredPrompt.userChoice.then((choiceResult) => {
-                        if (choiceResult.outcome === 'accepted') {
-                            console.log('User accepted install');
-                            trackEvent('pwa_install_accepted', {
-                                platform: platform,
-                                event_category: 'PWA',
-                                event_label: 'Install Accepted'
-                            });
-                        } else {
-                            trackEvent('pwa_install_declined', {
-                                platform: platform,
-                                event_category: 'PWA',
-                                event_label: 'Install Declined'
-                            });
-                        }
-                        deferredPrompt = null;
-                    });
-                } else {
-                    // Open app directly - browser will show install icon in address bar
-                    window.location.href = '/app.html';
-                }
-                return;
-            }
-            
             // For iOS, show manual instructions
             if (platform === 'ios') {
                 showInstructions();
                 return;
+            }
+            
+            // For Android/Desktop, try to trigger install prompt
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        console.log('User accepted install');
+                        trackEvent('pwa_install_accepted', {
+                            platform: platform,
+                            event_category: 'PWA',
+                            event_label: 'Install Accepted'
+                        });
+                    } else {
+                        trackEvent('pwa_install_declined', {
+                            platform: platform,
+                            event_category: 'PWA',
+                            event_label: 'Install Declined'
+                        });
+                        showInstructions();
+                    }
+                    deferredPrompt = null;
+                });
+            } else {
+                // No install prompt available, show instructions
+                showInstructions();
             }
         }
 
