@@ -3,21 +3,6 @@ import { View, Text, StyleSheet, TouchableOpacity, ScrollView, SafeAreaView, Fla
 import { Picker } from '@react-native-picker/picker';
 import { Audio } from 'expo-av';
 
-// Only import notifications on native platforms
-let Notifications = null;
-if (Platform.OS !== 'web') {
-  Notifications = require('expo-notifications');
-  
-  // Configure how notifications should be displayed (only on mobile)
-  Notifications.setNotificationHandler({
-    handleNotification: async () => ({
-      shouldShowAlert: true,
-      shouldPlaySound: true,
-      shouldSetBadge: true,
-    }),
-  });
-}
-
 // Bible data structure
 const BIBLE_DATA = {
   oldTestament: [
