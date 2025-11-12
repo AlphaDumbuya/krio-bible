@@ -264,30 +264,53 @@
         </header>
 
         <div class="download-section">
-            <h2>📥 Download the App</h2>
-            <p style="font-size: 1.3em; font-weight: 500;">Get the real mobile app on your device</p>
-            
-            <div id="buildingNotice" class="building-notice">
-                <h3>⚙️ Android App Build In Progress</h3>
-                <p style="color: #d0d0d0;">We're building the Android APK right now. Check back in 15-20 minutes!</p>
-                <p style="color: #b0b0b0; font-size: 0.9em; margin-top: 10px;">
-                    Track build progress: <a href="https://expo.dev/accounts/alphadumbuya11/projects/krio-audio-bible/builds" target="_blank" style="color: #ffa500;">View on Expo</a>
-                </p>
-            </div>
+            <h2>� Install the App</h2>
+            <p style="font-size: 1.3em; font-weight: 500;">Install directly - No App Store or Play Store required!</p>
 
-            <div class="download-buttons" id="downloadButtons" style="opacity: 0.5; pointer-events: none;">
-                <a href="#" id="androidDownload" class="btn btn-android" download>
-                    🤖 Download for Android
-                </a>
-                <button onclick="installIOS()" class="btn btn-ios" id="iosButton">
-                    🍎 Install for iPhone/iPad
+            <div class="download-buttons" id="downloadButtons">
+                <button onclick="installApp()" class="btn btn-android" id="installButton">
+                    📥 Install App Now
                 </button>
+                <a href="https://github.com/AlphaDumbuya/krio-bible" class="btn btn-secondary" target="_blank">
+                    ⭐ View on GitHub
+                </a>
             </div>
 
             <div class="download-info">
-                <p><strong>Android:</strong> Download APK and install (no Play Store needed)</p>
-                <p><strong>iOS:</strong> Install as web app (works like native app)</p>
-                <p><strong>File Size:</strong> ~50 MB (Android) | No download (iOS)</p>
+                <p><strong>✓ Android:</strong> Install as Progressive Web App (works offline)</p>
+                <p><strong>✓ iPhone/iPad:</strong> Add to Home Screen from Safari</p>
+                <p><strong>✓ Desktop:</strong> Install from Chrome, Edge, or Brave</p>
+                <p style="margin-top: 10px; color: #ff4081;"><strong>No download required • Works instantly • Always up-to-date</strong></p>
+            </div>
+
+            <div id="installInstructions" style="margin-top: 30px; padding: 20px; background: rgba(255, 255, 255, 0.05); border-radius: 15px; border: 1px solid rgba(255, 255, 255, 0.1); display: none;">
+                <h3 style="color: #ff4081; margin-bottom: 15px;">📱 Installation Instructions</h3>
+                <div id="androidInstructions" style="display: none; text-align: left; color: #d0d0d0; line-height: 1.8;">
+                    <strong style="color: #ff4081;">For Android (Chrome):</strong>
+                    <ol style="margin-left: 20px; margin-top: 10px;">
+                        <li>Tap the <strong>menu</strong> (⋮) in the top right</li>
+                        <li>Tap <strong>"Install app"</strong> or <strong>"Add to Home screen"</strong></li>
+                        <li>Tap <strong>"Install"</strong></li>
+                        <li>App will appear on your home screen!</li>
+                    </ol>
+                </div>
+                <div id="iosInstructions" style="display: none; text-align: left; color: #d0d0d0; line-height: 1.8;">
+                    <strong style="color: #ff4081;">For iPhone/iPad (Safari):</strong>
+                    <ol style="margin-left: 20px; margin-top: 10px;">
+                        <li>Tap the <strong>Share button</strong> (□↑) at the bottom</li>
+                        <li>Scroll down and tap <strong>"Add to Home Screen"</strong></li>
+                        <li>Tap <strong>"Add"</strong> in the top right</li>
+                        <li>App icon will appear on your home screen!</li>
+                    </ol>
+                </div>
+                <div id="desktopInstructions" style="display: none; text-align: left; color: #d0d0d0; line-height: 1.8;">
+                    <strong style="color: #ff4081;">For Desktop (Chrome/Edge/Brave):</strong>
+                    <ol style="margin-left: 20px; margin-top: 10px;">
+                        <li>Look for the <strong>install icon</strong> (⊕) in the address bar</li>
+                        <li>Click <strong>"Install"</strong></li>
+                        <li>App will open in its own window!</li>
+                    </ol>
+                </div>
             </div>
         </div>
 
@@ -353,31 +376,82 @@
     </div>
 
     <script>
-        function installIOS() {
+        let deferredPrompt;
+        const installButton = document.getElementById('installButton');
+        const installInstructions = document.getElementById('installInstructions');
+
+        // Detect platform
+        function detectPlatform() {
             const userAgent = navigator.userAgent || navigator.vendor || window.opera;
             
             if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
-                alert('To install on iPhone/iPad:\n\n1. Tap the Share button (□↑) at the bottom\n2. Scroll down and tap "Add to Home Screen"\n3. Tap "Add" in the top right\n4. Find the app icon on your home screen!');
+                return 'ios';
+            } else if (/android/i.test(userAgent)) {
+                return 'android';
             } else {
-                // For non-iOS devices, redirect to app
-                window.location.href = '/app.html';
+                return 'desktop';
             }
         }
+
+        // Show appropriate instructions
+        function showInstructions() {
+            const platform = detectPlatform();
+            installInstructions.style.display = 'block';
+            
+            if (platform === 'ios') {
+                document.getElementById('iosInstructions').style.display = 'block';
+            } else if (platform === 'android') {
+                document.getElementById('androidInstructions').style.display = 'block';
+            } else {
+                document.getElementById('desktopInstructions').style.display = 'block';
+            }
+            
+            installInstructions.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        // Listen for install prompt
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            if (installButton) {
+                installButton.innerHTML = '📥 Install App Now';
+            }
+        });
+
+        // Install app function
+        function installApp() {
+            const platform = detectPlatform();
+            
+            if (platform === 'ios') {
+                showInstructions();
+                return;
+            }
+            
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        console.log('User accepted install');
+                    } else {
+                        showInstructions();
+                    }
+                    deferredPrompt = null;
+                });
+            } else {
+                showInstructions();
+            }
+        }
+
+        // Handle successful installation
+        window.addEventListener('appinstalled', () => {
+            console.log('PWA installed');
+            alert('🎉 App installed successfully! Opening now...');
+            window.location.href = '/app.html';
+        });
 
         // Check if already installed
         if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
             window.location.href = '/app.html';
-        }
-
-        // When build is complete, update this with the actual download URL
-        // Replace 'YOUR_APK_DOWNLOAD_URL' with the actual Expo build URL
-        const APK_DOWNLOAD_URL = 'PENDING_BUILD'; // Update this after build completes
-        
-        if (APK_DOWNLOAD_URL !== 'PENDING_BUILD') {
-            document.getElementById('androidDownload').href = APK_DOWNLOAD_URL;
-            document.getElementById('downloadButtons').style.opacity = '1';
-            document.getElementById('downloadButtons').style.pointerEvents = 'auto';
-            document.getElementById('buildingNotice').style.display = 'none';
         }
     </script>
 </body>
