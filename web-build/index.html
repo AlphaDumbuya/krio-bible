@@ -279,9 +279,8 @@
 
             <div class="download-info">
                 <p><strong>📱 Progressive Web App (PWA):</strong> Instant install for all devices - Android, iPhone, iPad, and Desktop.</p>
-                <p><strong>✓ Android:</strong> Tap "Download & Install App" button above</p>
+                <p><strong>✓ Android/Desktop:</strong> Click button above → Opens app → Look for install icon (⊕) in browser bar</p>
                 <p><strong>✓ iPhone/iPad:</strong> Tap Share button (⬆️) → "Add to Home Screen"</p>
-                <p><strong>✓ Desktop:</strong> Click install icon in browser address bar</p>
                 <p style="margin-top: 10px; color: #ff4081;"><strong>Works offline • Full audio streaming • Always up-to-date • Free forever</strong></p>
             </div>
 
@@ -445,35 +444,39 @@
                 event_label: 'Install Button'
             });
             
-            if (platform === 'ios') {
-                showInstructions();
+            // For Android/Desktop, open the app directly and show browser's install option
+            if (platform === 'android' || platform === 'desktop') {
+                // Try to trigger install prompt if available
+                if (deferredPrompt) {
+                    deferredPrompt.prompt();
+                    deferredPrompt.userChoice.then((choiceResult) => {
+                        if (choiceResult.outcome === 'accepted') {
+                            console.log('User accepted install');
+                            trackEvent('pwa_install_accepted', {
+                                platform: platform,
+                                event_category: 'PWA',
+                                event_label: 'Install Accepted'
+                            });
+                        } else {
+                            trackEvent('pwa_install_declined', {
+                                platform: platform,
+                                event_category: 'PWA',
+                                event_label: 'Install Declined'
+                            });
+                        }
+                        deferredPrompt = null;
+                    });
+                } else {
+                    // Open app directly - browser will show install icon in address bar
+                    window.location.href = '/app.html';
+                }
                 return;
             }
             
-            if (deferredPrompt) {
-                deferredPrompt.prompt();
-                deferredPrompt.userChoice.then((choiceResult) => {
-                    if (choiceResult.outcome === 'accepted') {
-                        console.log('User accepted install');
-                        // Track successful install
-                        trackEvent('pwa_install_accepted', {
-                            platform: platform,
-                            event_category: 'PWA',
-                            event_label: 'Install Accepted'
-                        });
-                    } else {
-                        // Track declined install
-                        trackEvent('pwa_install_declined', {
-                            platform: platform,
-                            event_category: 'PWA',
-                            event_label: 'Install Declined'
-                        });
-                        showInstructions();
-                    }
-                    deferredPrompt = null;
-                });
-            } else {
+            // For iOS, show manual instructions
+            if (platform === 'ios') {
                 showInstructions();
+                return;
             }
         }
 
