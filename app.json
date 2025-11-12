@@ -19,13 +19,16 @@
       "bundleIdentifier": "com.newlifeinkossohtown.krioaudiobible"
     },
     "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/nlicm-logo.jpg",
-        "backgroundColor": "#0a0e27"
-      },
+      "icon": "./assets/nlicm-logo.jpg",
       "package": "com.newlifeinkossohtown.krioaudiobible",
+      "versionCode": 1,
       "permissions": []
     },
+    "plugins": [
+      [
+        "expo-av"
+      ]
+    ],
     "extra": {
       "eas": {
         "projectId": "32224755-5543-4a81-92b7-8984f06d30d9"
