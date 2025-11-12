@@ -18,5 +18,12 @@
       "id": "com.newlifeinkossohtown.krioaudiobible"
     }
   ],
-  "prefer_related_applications": true
+  "prefer_related_applications": false,
+  "icons": [
+    {
+      "src": "/pwa/apple-touch-icon/apple-touch-icon-180.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ]
 }
