@@ -113,10 +113,10 @@ export default function App() {
 
   // Auto-play audio when book or chapter changes and on player screen
   useEffect(() => {
-    if (screen === 'home' && book && chapter) {
+    if (book && chapter) {
       loadAndPlayAudio();
     }
-  }, [book, chapter, screen]);
+  }, [book, chapter]);
 
   // Update playback speed when it changes
   useEffect(() => {
@@ -565,7 +565,7 @@ export default function App() {
                 >
                   <Picker.Item label={book ? "Select..." : 'Select book first'} value="" />
                   {book && chapters.map((ch) => (
-                    <Picker.Item key={ch} label={`Ch. ${ch}`} value={ch} />
+                    <Picker.Item key={ch} label={`Chapter ${ch}`} value={ch} />
                   ))}
                 </Picker>
               </View>
