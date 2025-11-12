@@ -108,26 +108,30 @@
             font-weight: 600;
         }
 
-        .btn-android {
-            background: linear-gradient(135deg, #3ddc84, #2ba65f);
+        .btn-primary {
+            background: linear-gradient(135deg, #ff4081, #f50057);
             color: white;
-            box-shadow: 0 5px 20px rgba(61, 220, 132, 0.4);
+            box-shadow: 0 8px 25px rgba(255, 64, 129, 0.5);
+            font-size: 1.4em;
+            padding: 20px 50px;
         }
 
-        .btn-android:hover {
+        .btn-primary:hover {
             transform: translateY(-3px);
-            box-shadow: 0 10px 30px rgba(61, 220, 132, 0.6);
+            box-shadow: 0 12px 35px rgba(255, 64, 129, 0.7);
         }
 
-        .btn-ios {
-            background: linear-gradient(135deg, #007aff, #0051d5);
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
             color: white;
-            box-shadow: 0 5px 20px rgba(0, 122, 255, 0.4);
+            box-shadow: 0 5px 20px rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
-        .btn-ios:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 30px rgba(0, 122, 255, 0.6);
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.15);
         }
 
         .download-info {
@@ -265,14 +269,11 @@
 
         <div class="download-section">
             <h2>📲 Get the App</h2>
-            <p style="font-size: 1.3em; font-weight: 500;">Choose your installation method:</p>
+            <p style="font-size: 1.3em; font-weight: 500;">Install the Progressive Web App</p>
 
             <div class="download-buttons" id="downloadButtons">
-                <a href="https://expo.dev/artifacts/eas/6mzGCvEuzb997KUoCiPqqD.apk" class="btn btn-android" download="KrioAudioBible.apk">
-                    🤖 Download Android APK
-                </a>
-                <button onclick="installApp()" class="btn btn-secondary" id="installButton">
-                    📥 Install PWA (All Devices)
+                <button onclick="installApp()" class="btn btn-primary" id="installButton">
+                    📥 Download & Install App
                 </button>
                 <a href="https://github.com/AlphaDumbuya/krio-bible" class="btn btn-secondary" target="_blank">
                     ⭐ View on GitHub
@@ -280,11 +281,11 @@
             </div>
 
             <div class="download-info">
-                <p><strong>🤖 Android APK:</strong> Traditional app installation (~30 MB download). Enable "Unknown sources" in Settings → Security.</p>
-                <p><strong>📱 Progressive Web App (PWA):</strong> Instant install, no download required, always up-to-date.</p>
-                <p><strong>✓ iPhone/iPad:</strong> Add to Home Screen from Safari (PWA only)</p>
-                <p><strong>✓ Desktop:</strong> Install from Chrome, Edge, or Brave (PWA only)</p>
-                <p style="margin-top: 10px; color: #ff4081;"><strong>Both versions work offline • Full audio streaming • Free forever</strong></p>
+                <p><strong>📱 Progressive Web App (PWA):</strong> Instant install for all devices - Android, iPhone, iPad, and Desktop.</p>
+                <p><strong>✓ Android:</strong> Tap "Download & Install App" button above</p>
+                <p><strong>✓ iPhone/iPad:</strong> Tap Share button (⬆️) → "Add to Home Screen"</p>
+                <p><strong>✓ Desktop:</strong> Click install icon in browser address bar</p>
+                <p style="margin-top: 10px; color: #ff4081;"><strong>Works offline • Full audio streaming • Always up-to-date • Free forever</strong></p>
             </div>
 
             <div id="installInstructions" style="margin-top: 30px; padding: 20px; background: rgba(255, 255, 255, 0.05); border-radius: 15px; border: 1px solid rgba(255, 255, 255, 0.1); display: none;">
@@ -379,10 +380,27 @@
         </footer>
     </div>
 
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-XXXXXXXXXX'); // Replace with your actual GA4 Measurement ID
+    </script>
+
     <script>
         let deferredPrompt;
         const installButton = document.getElementById('installButton');
         const installInstructions = document.getElementById('installInstructions');
+
+        // Analytics helper function
+        function trackEvent(eventName, eventParams = {}) {
+            if (typeof gtag !== 'undefined') {
+                gtag('event', eventName, eventParams);
+            }
+            console.log('Event tracked:', eventName, eventParams);
+        }
 
         // Detect platform
         function detectPlatform() {
@@ -426,6 +444,13 @@
         function installApp() {
             const platform = detectPlatform();
             
+            // Track install button click
+            trackEvent('install_button_clicked', {
+                platform: platform,
+                event_category: 'PWA',
+                event_label: 'Install Button'
+            });
+            
             if (platform === 'ios') {
                 showInstructions();
                 return;
@@ -436,7 +461,19 @@
                 deferredPrompt.userChoice.then((choiceResult) => {
                     if (choiceResult.outcome === 'accepted') {
                         console.log('User accepted install');
+                        // Track successful install
+                        trackEvent('pwa_install_accepted', {
+                            platform: platform,
+                            event_category: 'PWA',
+                            event_label: 'Install Accepted'
+                        });
                     } else {
+                        // Track declined install
+                        trackEvent('pwa_install_declined', {
+                            platform: platform,
+                            event_category: 'PWA',
+                            event_label: 'Install Declined'
+                        });
                         showInstructions();
                     }
                     deferredPrompt = null;
@@ -449,6 +486,15 @@
         // Handle successful installation
         window.addEventListener('appinstalled', () => {
             console.log('PWA installed');
+            
+            // Track successful PWA installation
+            trackEvent('pwa_installed', {
+                platform: detectPlatform(),
+                event_category: 'PWA',
+                event_label: 'App Installed Successfully',
+                value: 1
+            });
+            
             alert('🎉 App installed successfully! Opening now...');
             window.location.href = '/app.html';
         });

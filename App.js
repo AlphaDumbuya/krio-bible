@@ -96,6 +96,44 @@ export default function App() {
   const [downloadedBooks, setDownloadedBooks] = useState({});
   const [downloadingBook, setDownloadingBook] = useState(null);
   const [downloadProgress, setDownloadProgress] = useState(0);
+  const [showTutorial, setShowTutorial] = useState(true);
+  const [tutorialStep, setTutorialStep] = useState(0);
+
+  // Tutorial steps
+  const tutorialSteps = [
+    {
+      title: "Welcome to Krio Audio Bible! 📖",
+      description: "Listen to the entire Bible in Krio language. Let's show you how to use the app.",
+      icon: "🎧"
+    },
+    {
+      title: "Select Testament",
+      description: "Tap 'Old Testament' or 'New Testament' from the home screen to start.",
+      icon: "📚"
+    },
+    {
+      title: "Choose Book & Chapter",
+      description: "Select any book, then choose a chapter to start listening.",
+      icon: "📖"
+    },
+    {
+      title: "Audio Controls",
+      description: "Play, pause, skip forward/backward, and adjust playback speed.",
+      icon: "🎵"
+    },
+    {
+      title: "Download for Offline",
+      description: "Go to Settings ⚙️ and tap 'Download All Books' to listen without internet!",
+      icon: "📥",
+      highlight: "settings"
+    }
+  ];
+
+  // Check if user has seen tutorial
+  useEffect(() => {
+    // In a real app, you'd use AsyncStorage to persist this
+    // For now, we'll show it once per session
+  }, []);
 
   // Auto-play audio when book or chapter changes and on player screen
   useEffect(() => {
@@ -238,18 +276,13 @@ export default function App() {
         
         try {
           if (Platform.OS === 'web') {
-            // On web, use service worker to cache audio
-            if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-              navigator.serviceWorker.controller.postMessage({
-                type: 'CACHE_AUDIO',
-                url: audioUrl
-              });
-              
-              // Wait a bit for caching to complete
-              await new Promise(resolve => setTimeout(resolve, 100));
+            // On web, fetch the audio file which triggers service worker caching
+            const response = await fetch(audioUrl);
+            if (response.ok) {
+              // Read the response to ensure it's fully downloaded
+              await response.blob();
             } else {
-              // Fallback: fetch to trigger browser cache
-              await fetch(audioUrl);
+              throw new Error(`Failed to download: ${response.status}`);
             }
           } else {
             // On native, use Audio.Sound to pre-cache
@@ -265,6 +298,7 @@ export default function App() {
           setDownloadProgress(Math.round((i / bookToDownload.chapters) * 100));
         } catch (error) {
           // Skip failed chapters but continue
+          console.error(`Failed to download ${audioFileName}:`, error);
           continue;
         }
       }
@@ -750,6 +784,9 @@ export default function App() {
           {/* Bottom Tab Bar */}
           {renderBottomTabBar()}
         </View>
+
+        {/* Tutorial Overlay */}
+        {renderTutorial()}
       </SafeAreaView>
     );
   }
@@ -1036,74 +1073,46 @@ export default function App() {
 
           {/* Offline Downloads Section */}
           <View style={styles.settingsSection}>
-            <Text style={styles.settingsSectionTitle}>📥 Download Books for Offline</Text>
+            <Text style={styles.settingsSectionTitle}>📥 Download All Books for Offline</Text>
             <Text style={styles.settingDescription}>
-              Download entire books to listen offline without internet
+              Download all 66 books (1,189 chapters) to listen offline without internet
             </Text>
             
-            {/* Old Testament Downloads */}
-            <Text style={[styles.settingTitle, { marginTop: 15, marginBottom: 10 }]}>Old Testament</Text>
-            {BIBLE_DATA.oldTestament.map((bk) => {
-              const downloaded = getDownloadedChaptersCount(bk.id);
-              const isDownloading = downloadingBook === bk.id;
-              const isComplete = downloaded === bk.chapters;
-              
-              return (
-                <TouchableOpacity
-                  key={bk.id}
-                  style={styles.downloadBookItem}
-                  onPress={() => downloadBook(bk)}
-                  disabled={isDownloading || isComplete}
-                >
-                  <View style={{ flex: 1 }}>
-                    <Text style={styles.downloadBookName}>{bk.name}</Text>
-                    <Text style={styles.downloadBookChapters}>
-                      {downloaded}/{bk.chapters} chapters
-                      {isComplete && ' ✓'}
-                    </Text>
-                  </View>
-                  {isDownloading ? (
-                    <Text style={styles.downloadingText}>{downloadProgress}%</Text>
-                  ) : isComplete ? (
-                    <Text style={styles.downloadCompleteIcon}>✓</Text>
-                  ) : (
-                    <Text style={styles.downloadIcon}>⬇️</Text>
-                  )}
-                </TouchableOpacity>
-              );
-            })}
-
-            {/* New Testament Downloads */}
-            <Text style={[styles.settingTitle, { marginTop: 15, marginBottom: 10 }]}>New Testament</Text>
-            {BIBLE_DATA.newTestament.map((bk) => {
-              const downloaded = getDownloadedChaptersCount(bk.id);
-              const isDownloading = downloadingBook === bk.id;
-              const isComplete = downloaded === bk.chapters;
-              
-              return (
-                <TouchableOpacity
-                  key={bk.id}
-                  style={styles.downloadBookItem}
-                  onPress={() => downloadBook(bk)}
-                  disabled={isDownloading || isComplete}
-                >
-                  <View style={{ flex: 1 }}>
-                    <Text style={styles.downloadBookName}>{bk.name}</Text>
-                    <Text style={styles.downloadBookChapters}>
-                      {downloaded}/{bk.chapters} chapters
-                      {isComplete && ' ✓'}
-                    </Text>
-                  </View>
-                  {isDownloading ? (
-                    <Text style={styles.downloadingText}>{downloadProgress}%</Text>
-                  ) : isComplete ? (
-                    <Text style={styles.downloadCompleteIcon}>✓</Text>
-                  ) : (
-                    <Text style={styles.downloadIcon}>⬇️</Text>
-                  )}
-                </TouchableOpacity>
-              );
-            })}
+            {downloadingBook ? (
+              <View style={styles.downloadAllProgress}>
+                <Text style={styles.downloadAllProgressText}>
+                  Downloading all books... {downloadProgress}%
+                </Text>
+                <Text style={styles.downloadAllProgressSubtext}>
+                  Please keep the app open until download completes
+                </Text>
+              </View>
+            ) : (
+              <TouchableOpacity
+                style={styles.downloadAllButton}
+                onPress={async () => {
+                  // Download all books sequentially
+                  const allBooks = [...BIBLE_DATA.oldTestament, ...BIBLE_DATA.newTestament];
+                  for (const bk of allBooks) {
+                    await downloadBook(bk);
+                  }
+                  if (Platform.OS !== 'web') {
+                    Alert.alert('Complete!', 'All books have been downloaded for offline use.');
+                  }
+                }}
+              >
+                <Text style={styles.downloadAllButtonIcon}>📥</Text>
+                <Text style={styles.downloadAllButtonText}>Download All Books</Text>
+              </TouchableOpacity>
+            )}
+            
+            <View style={styles.downloadStats}>
+              <Text style={styles.downloadStatsText}>
+                Downloaded: {Object.values(downloadedBooks).reduce((total, book) => 
+                  total + Object.values(book.chapters || {}).filter(Boolean).length, 0
+                )} / 1,189 chapters
+              </Text>
+            </View>
           </View>
 
           {/* Statistics Section */}
@@ -1279,7 +1288,75 @@ export default function App() {
     );
   }
 
-  return <View style={styles.container}><Text>Loading...</Text></View>;
+  // Render tutorial overlay
+  const renderTutorial = () => {
+    if (!showTutorial) return null;
+
+    const currentStep = tutorialSteps[tutorialStep];
+    const isLastStep = tutorialStep === tutorialSteps.length - 1;
+
+    return (
+      <View style={styles.tutorialOverlay}>
+        <View style={styles.tutorialModal}>
+          <Text style={styles.tutorialIcon}>{currentStep.icon}</Text>
+          <Text style={styles.tutorialTitle}>{currentStep.title}</Text>
+          <Text style={styles.tutorialDescription}>{currentStep.description}</Text>
+          
+          <View style={styles.tutorialSteps}>
+            {tutorialSteps.map((_, index) => (
+              <View
+                key={index}
+                style={[
+                  styles.tutorialDot,
+                  index === tutorialStep && styles.tutorialDotActive
+                ]}
+              />
+            ))}
+          </View>
+
+          <View style={styles.tutorialButtons}>
+            {tutorialStep > 0 && (
+              <TouchableOpacity
+                style={styles.tutorialBtnSecondary}
+                onPress={() => setTutorialStep(tutorialStep - 1)}
+              >
+                <Text style={styles.tutorialBtnSecondaryText}>← Back</Text>
+              </TouchableOpacity>
+            )}
+            
+            <TouchableOpacity
+              style={styles.tutorialBtnPrimary}
+              onPress={() => {
+                if (isLastStep) {
+                  setShowTutorial(false);
+                } else {
+                  setTutorialStep(tutorialStep + 1);
+                }
+              }}
+            >
+              <Text style={styles.tutorialBtnPrimaryText}>
+                {isLastStep ? "Get Started" : "Next →"}
+              </Text>
+            </TouchableOpacity>
+          </View>
+
+          <TouchableOpacity
+            style={styles.tutorialSkip}
+            onPress={() => setShowTutorial(false)}
+          >
+            <Text style={styles.tutorialSkipText}>Skip Tutorial</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    );
+  };
+
+  return (
+    <View style={styles.container}>
+      <Text>Loading...</Text>
+      {renderTutorial()}
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -2538,40 +2615,63 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     fontWeight: '600',
   },
-  downloadBookItem: {
+  downloadAllButton: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#ff4081',
+    borderRadius: 12,
+    padding: 16,
+    marginTop: 15,
+    shadowColor: '#ff4081',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 5,
+  },
+  downloadAllButtonIcon: {
+    fontSize: 24,
+    marginRight: 10,
+  },
+  downloadAllButtonText: {
+    fontSize: 16,
+    color: '#ffffff',
+    fontWeight: '700',
+    letterSpacing: 0.5,
+  },
+  downloadAllProgress: {
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: 12,
+    padding: 20,
+    marginTop: 15,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 64, 129, 0.3)',
+  },
+  downloadAllProgressText: {
+    fontSize: 16,
+    color: '#ff4081',
+    fontWeight: '700',
+    marginBottom: 8,
+  },
+  downloadAllProgressSubtext: {
+    fontSize: 13,
+    color: '#b0b0b0',
+    textAlign: 'center',
+  },
+  downloadStats: {
     backgroundColor: 'rgba(255, 255, 255, 0.05)',
     borderRadius: 12,
     padding: 12,
-    marginBottom: 8,
+    marginTop: 15,
+    alignItems: 'center',
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.1)',
   },
-  downloadBookName: {
-    fontSize: 15,
-    color: '#ffffff',
-    fontWeight: '600',
-    marginBottom: 4,
-  },
-  downloadBookChapters: {
-    fontSize: 13,
-    color: '#b0b0b0',
-  },
-  downloadIcon: {
-    fontSize: 24,
-    marginLeft: 10,
-  },
-  downloadingText: {
+  downloadStatsText: {
     fontSize: 14,
-    color: '#ff4081',
+    color: '#b0b0b0',
     fontWeight: '600',
-    marginLeft: 10,
-  },
-  downloadCompleteIcon: {
-    fontSize: 24,
-    color: '#4CAF50',
-    marginLeft: 10,
   },
   aboutCard: {
     backgroundColor: 'rgba(255, 255, 255, 0.05)',
@@ -2652,5 +2752,117 @@ const styles = StyleSheet.create({
     fontSize: 11,
     color: 'rgba(255, 255, 255, 0.4)',
     textAlign: 'center',
+  },
+  tutorialOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.9)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 1000,
+  },
+  tutorialModal: {
+    backgroundColor: '#1a1f3a',
+    borderRadius: 20,
+    padding: 30,
+    margin: 20,
+    maxWidth: 400,
+    width: '90%',
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: 'rgba(255, 64, 129, 0.5)',
+    shadowColor: '#ff4081',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.5,
+    shadowRadius: 20,
+    elevation: 10,
+  },
+  tutorialIcon: {
+    fontSize: 64,
+    marginBottom: 20,
+  },
+  tutorialTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#ffffff',
+    textAlign: 'center',
+    marginBottom: 12,
+  },
+  tutorialDescription: {
+    fontSize: 16,
+    color: '#b0b0b0',
+    textAlign: 'center',
+    lineHeight: 24,
+    marginBottom: 30,
+  },
+  tutorialSteps: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 30,
+  },
+  tutorialDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: 'rgba(255, 255, 255, 0.3)',
+    marginHorizontal: 4,
+  },
+  tutorialDotActive: {
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    backgroundColor: '#ff4081',
+  },
+  tutorialButtons: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
+    gap: 12,
+  },
+  tutorialBtnPrimary: {
+    backgroundColor: '#ff4081',
+    borderRadius: 12,
+    paddingVertical: 14,
+    paddingHorizontal: 30,
+    flex: 1,
+    maxWidth: 200,
+    shadowColor: '#ff4081',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.4,
+    shadowRadius: 8,
+    elevation: 5,
+  },
+  tutorialBtnPrimaryText: {
+    fontSize: 16,
+    color: '#ffffff',
+    fontWeight: '700',
+    textAlign: 'center',
+  },
+  tutorialBtnSecondary: {
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderRadius: 12,
+    paddingVertical: 14,
+    paddingHorizontal: 20,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+  },
+  tutorialBtnSecondaryText: {
+    fontSize: 16,
+    color: '#ffffff',
+    fontWeight: '600',
+    textAlign: 'center',
+  },
+  tutorialSkip: {
+    marginTop: 20,
+  },
+  tutorialSkipText: {
+    fontSize: 14,
+    color: 'rgba(255, 255, 255, 0.5)',
+    textDecorationLine: 'underline',
   },
 });
