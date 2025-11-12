@@ -59,17 +59,18 @@
         </header>
 
         <div class="download-section">
-            <h2>Ì≥± Get the App</h2>
-            <p>Install and listen to the complete Bible in Krio language offline</p>
-            <button onclick="installApp()" class="btn">Ì≥• Download & Install App</button>
+            <h2>üì± Get the App</h2>
+            <p>Listen to the complete Bible in Krio language - works on all devices!</p>
+            <button onclick="openApp()" class="btn">üéß Open Krio Audio Bible</button>
 
             <div class="install-instructions" id="installInstructions">
-                <h4>Ì≥ã How to Install:</h4>
+                <h4>üí° Install as App (Optional):</h4>
                 <ol>
-                    <li><strong>Android:</strong> Tap menu (‚ãÆ) ‚Üí "Add to Home screen"</li>
+                    <li><strong>Android:</strong> Tap menu (‚ãÆ) ‚Üí "Add to Home screen" or "Install app"</li>
                     <li><strong>iOS:</strong> Tap share (‚ñ°‚Üë) ‚Üí "Add to Home Screen"</li>
-                    <li><strong>Desktop:</strong> Click install icon in address bar</li>
+                    <li><strong>Desktop:</strong> Click install icon (‚äï) in address bar</li>
                 </ol>
+                <p style="margin-top: 15px; color: #ff4081;">‚≠ê Install to use offline and get app-like experience!</p>
             </div>
 
             <div class="download-info">
@@ -83,19 +84,19 @@
 
         <div class="features">
             <div class="feature-card">
-                <h3>Ì≥ñ Complete Bible</h3>
+                <h3>ÔøΩÔøΩÔøΩ Complete Bible</h3>
                 <p>All 66 books - Old and New Testament in authentic Krio language.</p>
             </div>
             <div class="feature-card">
-                <h3>Ìæß Crystal Clear Audio</h3>
+                <h3>ÔøΩÔøΩÔøΩ Crystal Clear Audio</h3>
                 <p>Professional voice recordings with excellent sound quality.</p>
             </div>
             <div class="feature-card">
-                <h3>Ì≥≤ Offline Access</h3>
+                <h3>ÔøΩÔøΩÔøΩ Offline Access</h3>
                 <p>Download books to listen anytime without internet connection.</p>
             </div>
             <div class="feature-card">
-                <h3>Ìºç Works Everywhere</h3>
+                <h3>ÔøΩÔøΩÔøΩ Works Everywhere</h3>
                 <p>Progressive Web App - works on Android, iOS, Windows, Mac, Linux.</p>
             </div>
             <div class="feature-card">
@@ -103,7 +104,7 @@
                 <p>Optimized for speed with minimal storage requirements.</p>
             </div>
             <div class="feature-card">
-                <h3>Ìπè Made with Love</h3>
+                <h3>ÔøΩÔøΩÔøΩ Made with Love</h3>
                 <p>Created by New Life in Christ Ministry for the Krio community.</p>
             </div>
         </div>
@@ -115,13 +116,15 @@
     </div>
 
     <script>
-        console.log('Landing page loaded - version 3.0');
+        console.log('Landing page loaded - version 4.0');
         let deferredPrompt;
         
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             deferredPrompt = e;
-            console.log('Install prompt ready');
+            console.log('Install prompt ready - showing install instructions');
+            // Auto-show install instructions when browser supports PWA install
+            document.getElementById('installInstructions').style.display = 'block';
         });
         
         window.addEventListener('appinstalled', () => {
@@ -129,28 +132,12 @@
             gtag('event', 'pwa_installed', {'event_category': 'engagement'});
         });
         
-        function installApp() {
-            console.log('Install button clicked');
-            gtag('event', 'install_button_clicked', {'event_category': 'engagement'});
+        function openApp() {
+            console.log('Open app button clicked');
+            gtag('event', 'open_app_clicked', {'event_category': 'engagement'});
             
-            if (deferredPrompt) {
-                console.log('Showing install prompt');
-                deferredPrompt.prompt();
-                deferredPrompt.userChoice.then((choiceResult) => {
-                    if (choiceResult.outcome === 'accepted') {
-                        console.log('Install accepted');
-                        gtag('event', 'pwa_install_accepted', {'event_category': 'engagement'});
-                    } else {
-                        console.log('Install declined');
-                        gtag('event', 'pwa_install_declined', {'event_category': 'engagement'});
-                    }
-                    deferredPrompt = null;
-                });
-            } else {
-                console.log('No install prompt - showing instructions');
-                document.getElementById('installInstructions').style.display = 'block';
-                document.getElementById('installInstructions').scrollIntoView({behavior: 'smooth'});
-            }
+            // Directly navigate to the app
+            window.location.href = '/app.html';
         }
         
         if ('serviceWorker' in navigator) {
