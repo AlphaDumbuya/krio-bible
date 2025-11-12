@@ -264,12 +264,15 @@
         </header>
 
         <div class="download-section">
-            <h2>� Install the App</h2>
-            <p style="font-size: 1.3em; font-weight: 500;">Install directly - No App Store or Play Store required!</p>
+            <h2>📲 Get the App</h2>
+            <p style="font-size: 1.3em; font-weight: 500;">Choose your installation method:</p>
 
             <div class="download-buttons" id="downloadButtons">
-                <button onclick="installApp()" class="btn btn-android" id="installButton">
-                    📥 Install App Now
+                <a href="https://expo.dev/accounts/alphadumbuya11/projects/krio-audio-bible/builds/8a3f66f6-496e-462c-b4a2-7dc4f2f9e1cb" class="btn btn-android" target="_blank" download>
+                    🤖 Download Android APK
+                </a>
+                <button onclick="installApp()" class="btn btn-secondary" id="installButton">
+                    📥 Install PWA (All Devices)
                 </button>
                 <a href="https://github.com/AlphaDumbuya/krio-bible" class="btn btn-secondary" target="_blank">
                     ⭐ View on GitHub
@@ -277,10 +280,11 @@
             </div>
 
             <div class="download-info">
-                <p><strong>✓ Android:</strong> Install as Progressive Web App (works offline)</p>
-                <p><strong>✓ iPhone/iPad:</strong> Add to Home Screen from Safari</p>
-                <p><strong>✓ Desktop:</strong> Install from Chrome, Edge, or Brave</p>
-                <p style="margin-top: 10px; color: #ff4081;"><strong>No download required • Works instantly • Always up-to-date</strong></p>
+                <p><strong>🤖 Android APK:</strong> Traditional app installation (~30 MB download). Enable "Unknown sources" in Settings → Security.</p>
+                <p><strong>📱 Progressive Web App (PWA):</strong> Instant install, no download required, always up-to-date.</p>
+                <p><strong>✓ iPhone/iPad:</strong> Add to Home Screen from Safari (PWA only)</p>
+                <p><strong>✓ Desktop:</strong> Install from Chrome, Edge, or Brave (PWA only)</p>
+                <p style="margin-top: 10px; color: #ff4081;"><strong>Both versions work offline • Full audio streaming • Free forever</strong></p>
             </div>
 
             <div id="installInstructions" style="margin-top: 30px; padding: 20px; background: rgba(255, 255, 255, 0.05); border-radius: 15px; border: 1px solid rgba(255, 255, 255, 0.1); display: none;">
