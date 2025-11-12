@@ -237,12 +237,28 @@ export default function App() {
         const audioUrl = `https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/video/upload/audio/${bookFolderName}/${audioFileName}`;
         
         try {
-          // Pre-cache the audio by creating and immediately unloading
-          const { sound: tempSound } = await Audio.Sound.createAsync(
-            { uri: audioUrl },
-            { shouldPlay: false }
-          );
-          await tempSound.unloadAsync();
+          if (Platform.OS === 'web') {
+            // On web, use service worker to cache audio
+            if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+              navigator.serviceWorker.controller.postMessage({
+                type: 'CACHE_AUDIO',
+                url: audioUrl
+              });
+              
+              // Wait a bit for caching to complete
+              await new Promise(resolve => setTimeout(resolve, 100));
+            } else {
+              // Fallback: fetch to trigger browser cache
+              await fetch(audioUrl);
+            }
+          } else {
+            // On native, use Audio.Sound to pre-cache
+            const { sound: tempSound } = await Audio.Sound.createAsync(
+              { uri: audioUrl },
+              { shouldPlay: false }
+            );
+            await tempSound.unloadAsync();
+          }
           
           // Mark as downloaded
           markChapterDownloaded(bookToDownload.id, i);
