@@ -150,14 +150,17 @@
                         console.log('PWA install accepted');
                         gtag('event', 'pwa_installed', {'event_category': 'engagement'});
                     } else {
-                        console.log('PWA install declined');
+                        console.log('PWA install declined - showing instructions');
+                        document.getElementById('installInstructions').style.display = 'block';
+                        document.getElementById('installInstructions').scrollIntoView({behavior: 'smooth'});
                     }
                     deferredPrompt = null;
                 });
             } else {
-                // If no install prompt available, open the app directly
-                console.log('No install prompt - opening app directly');
-                window.location.href = '/app.html';
+                // If no install prompt available, show instructions
+                console.log('No install prompt - showing manual instructions');
+                document.getElementById('installInstructions').style.display = 'block';
+                document.getElementById('installInstructions').scrollIntoView({behavior: 'smooth'});
             }
         }
         
