@@ -1,0 +1,32 @@
+{
+  "expo": {
+    "name": "Krio Audio Bible",
+    "slug": "krio-audio-bible",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/nlicm-logo.jpg",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/nlicm-logo.jpg",
+      "resizeMode": "contain",
+      "backgroundColor": "#0a0e27"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.newlifeinkossohtown.krioaudiobible"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#1a472a"
+      },
+      "package": "com.newlifeinkossohtown.krioaudiobible",
+      "permissions": [
+        "android.permission.READ_EXTERNAL_STORAGE"
+      ]
+    }
+  }
+}
