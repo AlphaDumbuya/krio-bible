@@ -210,6 +210,69 @@ export default function App() {
     return downloadedBooks[bookId]?.chapters?.[chapterNum] === true;
   };
 
+  // Get count of downloaded chapters for a book
+  const getDownloadedChaptersCount = (bookId) => {
+    const chapters = downloadedBooks[bookId]?.chapters || {};
+    return Object.values(chapters).filter(Boolean).length;
+  };
+
+  // Download entire book for offline use
+  const downloadBook = async (bookToDownload) => {
+    try {
+      setDownloadingBook(bookToDownload.id);
+      setDownloadProgress(0);
+      
+      const bookFolderName = bookToDownload.name.replace(/ /g, '_');
+      const bookNameLowercase = bookToDownload.name.toLowerCase().replace(/ /g, '_');
+      const CLOUDINARY_CLOUD_NAME = 'dwdgiblmg';
+      
+      for (let i = 1; i <= bookToDownload.chapters; i++) {
+        // Skip if already downloaded
+        if (isChapterDownloaded(bookToDownload.id, i)) {
+          setDownloadProgress(Math.round((i / bookToDownload.chapters) * 100));
+          continue;
+        }
+
+        const audioFileName = `${bookNameLowercase}_${i}.mp3`;
+        const audioUrl = `https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/video/upload/audio/${bookFolderName}/${audioFileName}`;
+        
+        try {
+          // Pre-cache the audio by creating and immediately unloading
+          const { sound: tempSound } = await Audio.Sound.createAsync(
+            { uri: audioUrl },
+            { shouldPlay: false }
+          );
+          await tempSound.unloadAsync();
+          
+          // Mark as downloaded
+          markChapterDownloaded(bookToDownload.id, i);
+          setDownloadProgress(Math.round((i / bookToDownload.chapters) * 100));
+        } catch (error) {
+          // Skip failed chapters but continue
+          continue;
+        }
+      }
+      
+      setDownloadingBook(null);
+      setDownloadProgress(0);
+      
+      const downloadedCount = getDownloadedChaptersCount(bookToDownload.id);
+      Alert.alert(
+        'Download Complete',
+        `${bookToDownload.name}: ${downloadedCount}/${bookToDownload.chapters} chapters available offline!`,
+        [{ text: 'OK' }]
+      );
+    } catch (error) {
+      setDownloadingBook(null);
+      setDownloadProgress(0);
+      Alert.alert(
+        'Download Failed',
+        `Could not download ${bookToDownload.name}. Please try again.`,
+        [{ text: 'OK' }]
+      );
+    }
+  };
+
   // Load and play audio
   const loadAndPlayAudio = async () => {
     try {
@@ -955,6 +1018,78 @@ export default function App() {
             )}
           </View>
 
+          {/* Offline Downloads Section */}
+          <View style={styles.settingsSection}>
+            <Text style={styles.settingsSectionTitle}>📥 Download Books for Offline</Text>
+            <Text style={styles.settingDescription}>
+              Download entire books to listen offline without internet
+            </Text>
+            
+            {/* Old Testament Downloads */}
+            <Text style={[styles.settingTitle, { marginTop: 15, marginBottom: 10 }]}>Old Testament</Text>
+            {BIBLE_DATA.oldTestament.map((bk) => {
+              const downloaded = getDownloadedChaptersCount(bk.id);
+              const isDownloading = downloadingBook === bk.id;
+              const isComplete = downloaded === bk.chapters;
+              
+              return (
+                <TouchableOpacity
+                  key={bk.id}
+                  style={styles.downloadBookItem}
+                  onPress={() => downloadBook(bk)}
+                  disabled={isDownloading || isComplete}
+                >
+                  <View style={{ flex: 1 }}>
+                    <Text style={styles.downloadBookName}>{bk.name}</Text>
+                    <Text style={styles.downloadBookChapters}>
+                      {downloaded}/{bk.chapters} chapters
+                      {isComplete && ' ✓'}
+                    </Text>
+                  </View>
+                  {isDownloading ? (
+                    <Text style={styles.downloadingText}>{downloadProgress}%</Text>
+                  ) : isComplete ? (
+                    <Text style={styles.downloadCompleteIcon}>✓</Text>
+                  ) : (
+                    <Text style={styles.downloadIcon}>⬇️</Text>
+                  )}
+                </TouchableOpacity>
+              );
+            })}
+
+            {/* New Testament Downloads */}
+            <Text style={[styles.settingTitle, { marginTop: 15, marginBottom: 10 }]}>New Testament</Text>
+            {BIBLE_DATA.newTestament.map((bk) => {
+              const downloaded = getDownloadedChaptersCount(bk.id);
+              const isDownloading = downloadingBook === bk.id;
+              const isComplete = downloaded === bk.chapters;
+              
+              return (
+                <TouchableOpacity
+                  key={bk.id}
+                  style={styles.downloadBookItem}
+                  onPress={() => downloadBook(bk)}
+                  disabled={isDownloading || isComplete}
+                >
+                  <View style={{ flex: 1 }}>
+                    <Text style={styles.downloadBookName}>{bk.name}</Text>
+                    <Text style={styles.downloadBookChapters}>
+                      {downloaded}/{bk.chapters} chapters
+                      {isComplete && ' ✓'}
+                    </Text>
+                  </View>
+                  {isDownloading ? (
+                    <Text style={styles.downloadingText}>{downloadProgress}%</Text>
+                  ) : isComplete ? (
+                    <Text style={styles.downloadCompleteIcon}>✓</Text>
+                  ) : (
+                    <Text style={styles.downloadIcon}>⬇️</Text>
+                  )}
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+
           {/* Statistics Section */}
           <View style={styles.settingsSection}>
             <Text style={styles.settingsSectionTitle}>📊 Statistics</Text>
@@ -963,6 +1098,16 @@ export default function App() {
               <Text style={styles.statIcon}>❤️</Text>
               <Text style={styles.statValue}>{favorites.length}</Text>
               <Text style={styles.statLabel}>Favorite Chapters</Text>
+            </View>
+
+            <View style={styles.statCard}>
+              <Text style={styles.statIcon}>📥</Text>
+              <Text style={styles.statValue}>
+                {Object.values(downloadedBooks).reduce((total, book) => {
+                  return total + Object.values(book.chapters || {}).filter(Boolean).length;
+                }, 0)}
+              </Text>
+              <Text style={styles.statLabel}>Downloaded Chapters</Text>
             </View>
 
             <View style={styles.statCard}>
@@ -2376,6 +2521,41 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: '#ffffff',
     fontWeight: '600',
+  },
+  downloadBookItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: 12,
+    padding: 12,
+    marginBottom: 8,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  downloadBookName: {
+    fontSize: 15,
+    color: '#ffffff',
+    fontWeight: '600',
+    marginBottom: 4,
+  },
+  downloadBookChapters: {
+    fontSize: 13,
+    color: '#b0b0b0',
+  },
+  downloadIcon: {
+    fontSize: 24,
+    marginLeft: 10,
+  },
+  downloadingText: {
+    fontSize: 14,
+    color: '#ff4081',
+    fontWeight: '600',
+    marginLeft: 10,
+  },
+  downloadCompleteIcon: {
+    fontSize: 24,
+    color: '#4CAF50',
+    marginLeft: 10,
   },
   aboutCard: {
     backgroundColor: 'rgba(255, 255, 255, 0.05)',
