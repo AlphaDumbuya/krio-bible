@@ -68,17 +68,16 @@
             <p>Listen to the complete Bible in Krio language offline</p>
             
             <div style="display: flex; flex-direction: column; gap: 15px; max-width: 400px; margin: 0 auto;">
-                <a href="app.html" 
-                   onclick="gtag('event', 'open_pwa', {'event_category': 'engagement'});"
+                <button onclick="installApp()" 
                    class="btn" 
-                   style="text-decoration: none; display: inline-block; background: linear-gradient(135deg, #4CAF50, #2E7D32);">
-                    📱 Open App
-                </a>
+                   id="installButton"
+                   style="background: linear-gradient(135deg, #4CAF50, #2E7D32);">
+                    📱 Download App
+                </button>
             </div>
             
-            <p style="text-align: center; margin-top: 15px; color: #888; font-size: 0.85em;">
-                Once opened, you can add it to your home screen!<br>
-                Tap the menu (⋮ or <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="vertical-align: middle;"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>) → "Add to Home Screen"
+            <p id="installInstructions" style="text-align: center; margin-top: 15px; color: #888; font-size: 0.85em; display: none;">
+                Tap the menu (⋮) → "Add to Home Screen" to install
             </p>
 
             <div class="download-info" style="margin-top: 30px;">
@@ -138,12 +137,27 @@
             gtag('event', 'pwa_installed', {'event_category': 'engagement'});
         });
         
-        function openApp() {
-            console.log('Download app clicked');
-            gtag('event', 'download_clicked', {'event_category': 'engagement'});
+        function installApp() {
+            console.log('Install app clicked');
+            gtag('event', 'install_clicked', {'event_category': 'engagement'});
             
-            // Redirect to the app page where PWA can be installed
-            window.location.href = 'app.html';
+            if (deferredPrompt) {
+                // Show the install prompt
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        console.log('User accepted the install prompt');
+                        gtag('event', 'pwa_install_accepted', {'event_category': 'engagement'});
+                    } else {
+                        console.log('User dismissed the install prompt');
+                    }
+                    deferredPrompt = null;
+                });
+            } else {
+                // If prompt not available, redirect to app and show instructions
+                console.log('Install prompt not available, redirecting to app');
+                window.location.href = 'app.html';
+            }
         }
         
         if ('serviceWorker' in navigator) {
