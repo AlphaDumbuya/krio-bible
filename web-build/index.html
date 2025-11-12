@@ -65,20 +65,22 @@
 
         <div class="download-section">
             <h2>Get the App</h2>
-            <p>Listen to the complete Bible in Krio language - works on all devices!</p>
-            <button onclick="openApp()" class="btn">Install Krio Audio Bible</button>
-
-            <div class="install-instructions" id="installInstructions">
-                <h4>Install as App (Optional):</h4>
-                <ol>
-                    <li><strong>Android:</strong> Tap menu (...) then "Add to Home screen" or "Install app"</li>
-                    <li><strong>iOS:</strong> Tap share button then "Add to Home Screen"</li>
-                    <li><strong>Desktop:</strong> Click install icon in address bar</li>
-                </ol>
-                <p style="margin-top: 15px; color: #ff4081; font-weight: bold;">Install to use offline and get app-like experience!</p>
+            <p>Listen to the complete Bible in Krio language offline</p>
+            
+            <div style="display: flex; flex-direction: column; gap: 15px; max-width: 400px; margin: 0 auto;">
+                <a href="https://expo.dev/artifacts/eas/6mzGCvEuzb997KUoCiPqqD.apk" 
+                   onclick="gtag('event', 'download_apk', {'event_category': 'download'});"
+                   class="btn" 
+                   style="text-decoration: none; display: inline-block; background: linear-gradient(135deg, #4CAF50, #2E7D32);">
+                    Download for Android (APK)
+                </a>
+                
+                <button onclick="openApp()" class="btn" style="background: linear-gradient(135deg, #ff4081, #8a2be2);">
+                    Install Web App (iOS/Desktop)
+                </button>
             </div>
 
-            <div class="download-info">
+            <div class="download-info" style="margin-top: 30px;">
                 <h3>Features:</h3>
                 <p><strong>Complete Bible:</strong> All 66 books in Krio</p>
                 <p><strong>High Quality Audio:</strong> Professional narration</p>
@@ -136,27 +138,22 @@
         });
         
         function openApp() {
-            console.log('Download button clicked');
-            gtag('event', 'download_button_clicked', {'event_category': 'engagement'});
+            console.log('Install web app clicked');
+            gtag('event', 'pwa_install_clicked', {'event_category': 'engagement'});
             
-            // Try to trigger PWA install prompt immediately
+            // Try to trigger PWA install prompt
             if (deferredPrompt) {
-                console.log('Showing install prompt');
                 deferredPrompt.prompt();
                 deferredPrompt.userChoice.then((choiceResult) => {
                     if (choiceResult.outcome === 'accepted') {
-                        console.log('PWA install accepted');
+                        console.log('PWA installed');
                         gtag('event', 'pwa_install_accepted', {'event_category': 'engagement'});
-                    } else {
-                        console.log('PWA install declined');
-                        gtag('event', 'pwa_install_declined', {'event_category': 'engagement'});
                     }
                     deferredPrompt = null;
                 });
             } else {
-                // If no install prompt available, show instructions
-                console.log('No install prompt - showing manual instructions');
-                alert('To install:\n\nAndroid: Tap menu (...) → "Add to Home screen"\niOS: Tap share → "Add to Home Screen"\nDesktop: Click install icon in address bar');
+                // Show simple instructions for manual install
+                alert('To install:\n\niOS: Tap Share → Add to Home Screen\n\nDesktop: Click install icon in address bar\n\nAndroid: Download the APK instead!');
             }
         }
         
