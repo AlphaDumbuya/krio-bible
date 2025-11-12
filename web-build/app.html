@@ -31,7 +31,19 @@
       You need to enable JavaScript to run this app.
     </noscript>
     <!-- The root element for your Expo app. -->
-    <div id="root"></div>
+    <div id="root">
+      <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+        <div style="width: 80px; height: 80px; border: 5px solid rgba(255, 64, 129, 0.3); border-top-color: #ff4081; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+        <p style="color: #ffffff; font-size: 18px; margin-top: 20px; font-weight: 600;">Loading Krio Audio Bible...</p>
+        <p style="color: #b0b0b0; font-size: 14px; margin-top: 10px;">Please wait</p>
+      </div>
+      <style>
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+      </style>
+    </div>
   <script src="/_expo/static/js/web/AppEntry-60a8d69ecc9fe9928b6e556410a95e8a.js" defer></script>
 </body>
 </html>
