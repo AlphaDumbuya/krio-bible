@@ -5,7 +5,7 @@
   "lang": "en",
   "name": "Krio Audio Bible",
   "short_name": "Krio Bible",
-  "start_url": "/",
+  "start_url": "/app.html",
   "orientation": "portrait",
   "related_applications": [
     {

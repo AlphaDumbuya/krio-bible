@@ -68,10 +68,25 @@
             <p>Listen to the complete Bible in Krio language offline</p>
             
             <div style="display: flex; flex-direction: column; gap: 15px; max-width: 400px; margin: 0 auto;">
-                <button onclick="openApp()" class="btn" style="background: linear-gradient(135deg, #4CAF50, #2E7D32);">
-                    Download App (All Devices)
-                </button>
+                <a href="https://github.com/AlphaDumbuya/krio-bible/releases/download/v1.0.1/krio-bible-v1.0.1.apk" 
+                   onclick="gtag('event', 'download_apk', {'event_category': 'download'});"
+                   class="btn" 
+                   style="text-decoration: none; display: inline-block; background: linear-gradient(135deg, #4CAF50, #2E7D32);">
+                    📱 Download Android App
+                </a>
+                
+                <a href="app.html" 
+                   onclick="gtag('event', 'open_web_app', {'event_category': 'engagement'});"
+                   class="btn" 
+                   style="text-decoration: none; display: inline-block; background: linear-gradient(135deg, #2196F3, #1976D2);">
+                    🌐 Use Web Version
+                </a>
             </div>
+            
+            <p style="text-align: center; margin-top: 15px; color: #888; font-size: 0.85em;">
+                Android users: Download the app for best experience!<br>
+                iOS/Desktop: Use the web version
+            </p>
 
             <div class="download-info" style="margin-top: 30px;">
                 <h3>Features:</h3>
