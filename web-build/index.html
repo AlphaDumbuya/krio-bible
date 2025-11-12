@@ -23,6 +23,10 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%); color: #ffffff; min-height: 100vh; }
         .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .landing-page { display: block; }
+        .landing-page.hidden { display: none; }
+        #root { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 9999; background: #0a0e27; }
+        #root.active { display: block; }
         header { text-align: center; padding: 60px 20px 40px; background: linear-gradient(135deg, rgba(138, 43, 226, 0.1) 0%, rgba(255, 64, 129, 0.1) 100%); border-radius: 20px; margin-bottom: 40px; }
         .logo { width: 120px; height: 120px; margin: 0 auto 20px; background: #fff; border-radius: 20px; padding: 10px; box-shadow: 0 10px 30px rgba(255, 64, 129, 0.3); }
         .logo img { width: 100%; height: 100%; object-fit: contain; display: block; }
@@ -49,62 +53,63 @@
     </style>
 </head>
 <body>
-    <div class="container">
+    <div id="root"></div>
+    <div class="container landing-page">
         <header>
             <div class="logo">
-                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Crect fill='%23ff4081' width='200' height='200' rx='20'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-size='40' font-weight='bold' fill='%23ffffff'%3EKAB%3C/text%3E%3C/svg%3E" alt="Krio Audio Bible Logo">
+                <img src="/assets/assets/nlicm-logo.f965c92be117cc700704824a732689cc.jpg" alt="New Life in Christ Ministry Logo">
             </div>
             <h1>Krio Audio Bible</h1>
             <p class="tagline">New Life in Christ Ministry - Kossoh Town Chapter</p>
         </header>
 
         <div class="download-section">
-            <h2>📱 Get the App</h2>
+            <h2>Get the App</h2>
             <p>Listen to the complete Bible in Krio language - works on all devices!</p>
-            <button onclick="openApp()" class="btn">🎧 Open Krio Audio Bible</button>
+            <button onclick="openApp()" class="btn">Install Krio Audio Bible</button>
 
             <div class="install-instructions" id="installInstructions">
-                <h4>💡 Install as App (Optional):</h4>
+                <h4>Install as App (Optional):</h4>
                 <ol>
-                    <li><strong>Android:</strong> Tap menu (⋮) → "Add to Home screen" or "Install app"</li>
-                    <li><strong>iOS:</strong> Tap share (□↑) → "Add to Home Screen"</li>
-                    <li><strong>Desktop:</strong> Click install icon (⊕) in address bar</li>
+                    <li><strong>Android:</strong> Tap menu (...) then "Add to Home screen" or "Install app"</li>
+                    <li><strong>iOS:</strong> Tap share button then "Add to Home Screen"</li>
+                    <li><strong>Desktop:</strong> Click install icon in address bar</li>
                 </ol>
-                <p style="margin-top: 15px; color: #ff4081;">⭐ Install to use offline and get app-like experience!</p>
+                <p style="margin-top: 15px; color: #ff4081; font-weight: bold;">Install to use offline and get app-like experience!</p>
             </div>
 
             <div class="download-info">
-                <h3>✨ Features:</h3>
-                <p><strong>✓ Complete Bible:</strong> All 66 books in Krio</p>
-                <p><strong>✓ High Quality Audio:</strong> Professional narration</p>
-                <p><strong>✓ Offline Mode:</strong> Download for offline listening</p>
-                <p><strong>✓ Free Forever:</strong> No ads, no subscriptions</p>
+                <h3>Features:</h3>
+                <p><strong>Complete Bible:</strong> All 66 books in Krio</p>
+                <p><strong>High Quality Audio:</strong> Professional narration</p>
+                <p><strong>Offline Mode:</strong> Download for offline listening</p>
+                <p><strong>Free Forever:</strong> No ads, no subscriptions</p>
             </div>
         </div>
 
         <div class="features">
             <div class="feature-card">
-                <h3>��� Complete Bible</h3>
+                <h3>Complete Bible</h3>
                 <p>All 66 books - Old and New Testament in authentic Krio language.</p>
             </div>
             <div class="feature-card">
-                <h3>��� Crystal Clear Audio</h3>
+                <h3>Crystal Clear Audio</h3>
                 <p>Professional voice recordings with excellent sound quality.</p>
             </div>
             <div class="feature-card">
-                <h3>��� Offline Access</h3>
+                <h3>Offline Access</h3>
                 <p>Download books to listen anytime without internet connection.</p>
             </div>
             <div class="feature-card">
-                <h3>��� Works Everywhere</h3>
+                <h3>Works Everywhere</h3>
                 <p>Progressive Web App - works on Android, iOS, Windows, Mac, Linux.</p>
             </div>
             <div class="feature-card">
-                <h3>⚡ Fast & Light</h3>
+                <h3>Fast & Light</h3>
                 <p>Optimized for speed with minimal storage requirements.</p>
             </div>
             <div class="feature-card">
-                <h3>��� Made with Love</h3>
+                <h3>Made with Love</h3>
                 <p>Created by New Life in Christ Ministry for the Krio community.</p>
             </div>
         </div>
@@ -133,11 +138,27 @@
         });
         
         function openApp() {
-            console.log('Open app button clicked');
-            gtag('event', 'open_app_clicked', {'event_category': 'engagement'});
+            console.log('Download button clicked');
+            gtag('event', 'download_button_clicked', {'event_category': 'engagement'});
             
-            // Directly navigate to the app
-            window.location.href = '/app.html';
+            // Try to trigger PWA install prompt immediately
+            if (deferredPrompt) {
+                console.log('Showing install prompt');
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        console.log('PWA install accepted');
+                        gtag('event', 'pwa_installed', {'event_category': 'engagement'});
+                    } else {
+                        console.log('PWA install declined');
+                    }
+                    deferredPrompt = null;
+                });
+            } else {
+                // If no install prompt available, open the app directly
+                console.log('No install prompt - opening app directly');
+                window.location.href = '/app.html';
+            }
         }
         
         if ('serviceWorker' in navigator) {
