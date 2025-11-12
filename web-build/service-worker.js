@@ -1,8 +1,8 @@
 // Service Worker for Krio Audio Bible
 // Provides true offline audio caching
 
-const CACHE_NAME = 'krio-audio-bible-v2';
-const AUDIO_CACHE_NAME = 'krio-audio-files-v2';
+const CACHE_NAME = 'krio-audio-bible-v3';
+const AUDIO_CACHE_NAME = 'krio-audio-files-v3';
 
 // Install event - cache app shell
 self.addEventListener('install', (event) => {
