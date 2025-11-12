@@ -191,64 +191,23 @@ export default function App() {
     }
   };
 
-  // Download entire book for offline use
-  const downloadBook = async (bookToDownload) => {
-    try {
-      setDownloadingBook(bookToDownload.name);
-      setDownloadProgress(0);
-      
-      const bookFolderName = bookToDownload.name.replace(/ /g, '_');
-      const bookNameLowercase = bookToDownload.name.toLowerCase().replace(/ /g, '_');
-      const CLOUDINARY_CLOUD_NAME = 'dwdgiblmg';
-      
-      const downloadedChapters = {};
-      
-      for (let i = 1; i <= bookToDownload.chapters; i++) {
-        const audioFileName = `${bookNameLowercase}_${i}.mp3`;
-        const audioUrl = `https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/video/upload/audio/${bookFolderName}/${audioFileName}`;
-        
-        try {
-          // Pre-cache the audio by creating and immediately unloading
-          const { sound: tempSound } = await Audio.Sound.createAsync(
-            { uri: audioUrl },
-            { shouldPlay: false }
-          );
-          await tempSound.unloadAsync();
-          
-          downloadedChapters[i] = true;
-          setDownloadProgress(Math.round((i / bookToDownload.chapters) * 100));
-        } catch (error) {
-          // Skip failed chapters but continue
-          downloadedChapters[i] = false;
+  // Mark chapter as downloaded after successful load
+  const markChapterDownloaded = (bookId, chapterNum) => {
+    setDownloadedBooks(prev => ({
+      ...prev,
+      [bookId]: {
+        ...prev[bookId],
+        chapters: {
+          ...(prev[bookId]?.chapters || {}),
+          [chapterNum]: true
         }
       }
-      
-      setDownloadedBooks(prev => ({
-        ...prev,
-        [bookToDownload.id]: {
-          name: bookToDownload.name,
-          chapters: downloadedChapters,
-          downloadedAt: new Date().toISOString()
-        }
-      }));
-      
-      setDownloadingBook(null);
-      setDownloadProgress(0);
-      
-      Alert.alert(
-        'Download Complete',
-        `${bookToDownload.name} is now available offline!`,
-        [{ text: 'OK' }]
-      );
-    } catch (error) {
-      setDownloadingBook(null);
-      setDownloadProgress(0);
-      Alert.alert(
-        'Download Failed',
-        `Could not download ${bookToDownload.name}. Please try again.`,
-        [{ text: 'OK' }]
-      );
-    }
+    }));
+  };
+
+  // Check if chapter is downloaded
+  const isChapterDownloaded = (bookId, chapterNum) => {
+    return downloadedBooks[bookId]?.chapters?.[chapterNum] === true;
   };
 
   // Load and play audio
@@ -279,16 +238,23 @@ export default function App() {
         staysActiveInBackground: true,
       });
       
-      // Load and play the sound from the local server
+      // Load and play the sound
       const { sound: newSound } = await Audio.Sound.createAsync(
         { uri: audioUrl },
-        { shouldPlay: true, rate: playbackSpeed },
+        { 
+          shouldPlay: true, 
+          rate: playbackSpeed,
+          progressUpdateIntervalMillis: 500
+        },
         onPlaybackStatusUpdate
       );
       
       setSound(newSound);
       setIsPlaying(true);
       setIsLoading(false);
+      
+      // Mark chapter as downloaded/cached for offline use
+      markChapterDownloaded(book.id, chapter);
     } catch (error) {
       setIsLoading(false);
       Alert.alert(
@@ -574,29 +540,10 @@ export default function App() {
                   </Picker>
                 </View>
                 {book && (
-                  <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <Text style={styles.selectHint}>
-                      {book.chapters} Chapters
-                    </Text>
-                    {downloadedBooks[book.id] ? (
-                      <Text style={[styles.selectHint, { color: '#4CAF50' }]}>
-                        ✓ Downloaded
-                      </Text>
-                    ) : downloadingBook === book.name ? (
-                      <Text style={[styles.selectHint, { color: '#ff4081' }]}>
-                        Downloading... {downloadProgress}%
-                      </Text>
-                    ) : (
-                      <TouchableOpacity 
-                        onPress={() => downloadBook(book)}
-                        style={{ padding: 5 }}
-                      >
-                        <Text style={[styles.selectHint, { color: '#2196F3' }]}>
-                          ⬇️ Download Book
-                        </Text>
-                      </TouchableOpacity>
-                    )}
-                  </View>
+                  <Text style={styles.selectHint}>
+                    {book.chapters} Chapters
+                    {downloadedBooks[book.id]?.chapters?.[chapter] && ' • ✓ Offline'}
+                  </Text>
                 )}
               </View>
             </View>
@@ -644,12 +591,7 @@ export default function App() {
                 )}
                 {isLoading && (
                   <Text style={styles.loadingText}>
-                    {downloadedBooks[book?.id] ? 'Loading from cache...' : 'Streaming audio...'}
-                  </Text>
-                )}
-                {downloadingBook && (
-                  <Text style={[styles.loadingText, { color: '#ff4081' }]}>
-                    Downloading {downloadingBook}: {downloadProgress}%
+                    {isChapterDownloaded(book?.id, chapter) ? '📱 Loading from offline...' : '🌐 Downloading & caching...'}
                   </Text>
                 )}
                 {book && chapter && (
