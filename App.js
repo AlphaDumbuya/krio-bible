@@ -214,12 +214,15 @@ export default function App() {
 
   // Auto-download entire book when book is selected
   useEffect(() => {
-    if (book && autoDownloadEnabled) {
+    if (book) {
       // Check if book is not already fully downloaded
       const downloadedCount = getDownloadedChaptersCount(book.id);
       if (downloadedCount < book.chapters) {
         // Start downloading the book in the background
+        console.log(`Auto-downloading book: ${book.name}`);
         downloadBook(book);
+      } else {
+        console.log(`Book ${book.name} already fully downloaded (${downloadedCount}/${book.chapters})`);
       }
     }
   }, [book]);
