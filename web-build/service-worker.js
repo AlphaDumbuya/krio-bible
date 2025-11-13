@@ -1,8 +1,8 @@
 // Service Worker for Krio Audio Bible
 // Provides true offline audio caching
 
-const CACHE_NAME = 'krio-audio-bible-v3';
-const AUDIO_CACHE_NAME = 'krio-audio-files-v3';
+const CACHE_NAME = 'krio-audio-bible-v4';
+const AUDIO_CACHE_NAME = 'krio-audio-files-v4';
 
 // Install event - cache app shell
 self.addEventListener('install', (event) => {
@@ -13,8 +13,12 @@ self.addEventListener('install', (event) => {
         '/',
         '/index.html',
         '/app.html',
-        '/manifest.json'
-      ]);
+        '/manifest.json',
+        '/_expo/static/js/web/AppEntry-1bf10fdb1aacf8a095ec7874899376cf.js',
+        '/assets/assets/nlicm-logo.f965c92be117cc700704824a732689cc.jpg'
+      ]).catch((error) => {
+        console.error('Failed to cache files:', error);
+      });
     })
   );
   self.skipWaiting();
@@ -73,7 +77,24 @@ self.addEventListener('fetch', (event) => {
   // Handle other requests (app files)
   event.respondWith(
     caches.match(event.request).then((response) => {
-      return response || fetch(event.request);
+      if (response) {
+        return response;
+      }
+      
+      return fetch(event.request).then((networkResponse) => {
+        // Cache successful responses for future offline use
+        if (networkResponse && networkResponse.status === 200) {
+          const responseClone = networkResponse.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(event.request, responseClone);
+          });
+        }
+        return networkResponse;
+      }).catch((error) => {
+        // If offline and not in cache, return app.html as fallback
+        console.log('Offline - serving from cache:', error);
+        return caches.match('/app.html');
+      });
     })
   );
 });
