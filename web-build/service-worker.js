@@ -1,8 +1,8 @@
 // Service Worker for Krio Audio Bible
 // Provides true offline audio caching
 
-const CACHE_NAME = 'krio-audio-bible-v5';
-const AUDIO_CACHE_NAME = 'krio-audio-files-v5';
+const CACHE_NAME = 'krio-audio-bible-v6';
+const AUDIO_CACHE_NAME = 'krio-audio-files-v6';
 
 // Install event - cache app shell
 self.addEventListener('install', (event) => {
@@ -14,7 +14,7 @@ self.addEventListener('install', (event) => {
         '/index.html',
         '/app.html',
         '/manifest.json',
-        '/_expo/static/js/web/AppEntry-0247c48698df6eb69d1185a729490b5a.js',
+        '/_expo/static/js/web/AppEntry-c22af2e04e7f2c50d3caa22df831dad4.js',
         '/assets/assets/nlicm-logo.f965c92be117cc700704824a732689cc.jpg'
       ]).catch((error) => {
         console.error('Failed to cache files:', error);
