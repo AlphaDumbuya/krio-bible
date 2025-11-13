@@ -335,6 +335,7 @@ export default function App() {
   // Download entire book for offline use
   const downloadBook = async (bookToDownload) => {
     try {
+      console.log(`Starting download for book: ${bookToDownload.name} (${bookToDownload.chapters} chapters)`);
       setDownloadingBook(bookToDownload.id);
       setDownloadProgress(0);
       
@@ -352,6 +353,8 @@ export default function App() {
         const audioFileName = `${bookNameLowercase}_${i}.mp3`;
         const audioUrl = `https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/video/upload/audio/${bookFolderName}/${audioFileName}`;
         
+        console.log(`Downloading chapter ${i}/${bookToDownload.chapters}: ${audioFileName}`);
+        
         try {
           if (Platform.OS === 'web') {
             // On web, fetch the audio file which triggers service worker caching
@@ -359,6 +362,7 @@ export default function App() {
             if (response.ok) {
               // Read the response to ensure it's fully downloaded
               await response.blob();
+              console.log(`✓ Chapter ${i} downloaded successfully`);
             } else {
               throw new Error(`Failed to download: ${response.status}`);
             }
@@ -385,19 +389,32 @@ export default function App() {
       setDownloadProgress(0);
       
       const downloadedCount = getDownloadedChaptersCount(bookToDownload.id);
-      Alert.alert(
-        'Download Complete',
-        `${bookToDownload.name}: ${downloadedCount}/${bookToDownload.chapters} chapters available offline!`,
-        [{ text: 'OK' }]
-      );
+      console.log(`Download complete: ${bookToDownload.name} - ${downloadedCount}/${bookToDownload.chapters} chapters`);
+      
+      if (Platform.OS === 'web') {
+        // Use browser alert for web
+        alert(`Download Complete!\n\n${bookToDownload.name}: ${downloadedCount}/${bookToDownload.chapters} chapters available offline!`);
+      } else {
+        Alert.alert(
+          'Download Complete',
+          `${bookToDownload.name}: ${downloadedCount}/${bookToDownload.chapters} chapters available offline!`,
+          [{ text: 'OK' }]
+        );
+      }
     } catch (error) {
+      console.error('Download error:', error);
       setDownloadingBook(null);
       setDownloadProgress(0);
-      Alert.alert(
-        'Download Failed',
-        `Could not download ${bookToDownload.name}. Please try again.`,
-        [{ text: 'OK' }]
-      );
+      
+      if (Platform.OS === 'web') {
+        alert(`Download Failed!\n\nCould not download ${bookToDownload.name}. Please try again.`);
+      } else {
+        Alert.alert(
+          'Download Failed',
+          `Could not download ${bookToDownload.name}. Please try again.`,
+          [{ text: 'OK' }]
+        );
+      }
     }
   };
 
