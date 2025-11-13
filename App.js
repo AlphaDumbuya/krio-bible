@@ -212,6 +212,18 @@ export default function App() {
     }
   }, [playbackSpeed, sound]);
 
+  // Auto-download entire book when book is selected
+  useEffect(() => {
+    if (book && autoDownloadEnabled) {
+      // Check if book is not already fully downloaded
+      const downloadedCount = getDownloadedChaptersCount(book.id);
+      if (downloadedCount < book.chapters) {
+        // Start downloading the book in the background
+        downloadBook(book);
+      }
+    }
+  }, [book]);
+
   // Auto-play next chapter functionality
   const autoPlayNext = async () => {
     await nextChapter();
